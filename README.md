@@ -109,12 +109,7 @@ Java Version: 17 (LTS)
 Install Java 17:
 Download and install from the official Oracle JDK 17 or use OpenJDK.
 
-Verify Java Version:
 
-bash
-Copy
-Edit
-java -version
 Output should confirm Java 17.
 
 Use Gradle 8.1.2:
@@ -124,18 +119,5 @@ properties
 Copy
 Edit
 distributionUrl=https\://services.gradle.org/distributions/gradle-8.1.2-all.zip
-Flutter Clean and Build:
 
-bash
-Copy
-Edit
-flutter clean
-flutter pub get
-flutter build apk
-Run the App:
-
-bash
-Copy
-Edit
-flutter run
 
