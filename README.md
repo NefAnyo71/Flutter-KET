@@ -92,3 +92,50 @@ This cross-platform project aims to provide a **centralized digital hub** for th
 📧 For questions, suggestions or contributions: `arifkerem71@gmail.com`
 📸 Instagram: [@kkuekonomi71.](https://www.instagram.com/kkuekonomi/)
 🌐 Web: [kkuekonomi.vercel.app](https://kkuekonomi.vercel.app/)
+
+⚙️ Flutter Setup Requirements (Gradle 8.1.2 & Java 17)
+To run and build this Flutter project, make sure your development environment is configured as follows:
+
+✅ Prerequisites
+Flutter SDK: 3.13 or later
+
+Dart SDK: Included with Flutter
+
+Gradle Version: 8.1.2
+
+Java Version: 17 (LTS)
+
+📦 Setup Instructions
+Install Java 17:
+Download and install from the official Oracle JDK 17 or use OpenJDK.
+
+Verify Java Version:
+
+bash
+Copy
+Edit
+java -version
+Output should confirm Java 17.
+
+Use Gradle 8.1.2:
+Set distributionUrl in android/gradle/wrapper/gradle-wrapper.properties:
+
+properties
+Copy
+Edit
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.1.2-all.zip
+Flutter Clean and Build:
+
+bash
+Copy
+Edit
+flutter clean
+flutter pub get
+flutter build apk
+Run the App:
+
+bash
+Copy
+Edit
+flutter run
+
