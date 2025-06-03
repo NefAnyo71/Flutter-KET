@@ -65,8 +65,8 @@ This cross-platform project aims to provide a **centralized digital hub** for th
 
 * **Frontend (Mobile App):** Flutter & Dart
 * **Frontend (Web App):** HTML5, CSS, JavaScript
-* **Backend (Shared):** Firebase / Node.js / Firestore (or your actual backend stack)
-* **Database:** Firebase Firestore databases
+* **Backend (Shared):** Firebase   
+* **Database:** Firestore Database
 
 ---
 
