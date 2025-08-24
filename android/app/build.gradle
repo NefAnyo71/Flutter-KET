@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -10,16 +13,17 @@ def keystoreProperties = new Properties()
 
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-} 
+}
 
 android {
     namespace = "com.arifozdemir.ekos"
-    compileSdk = 35
-    ndkVersion = "25.1.8937393"
+    compileSdk = 36
+    ndkVersion "26.1.10909125"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -28,10 +32,10 @@ android {
 
     defaultConfig {
         applicationId = "com.arifozdemir.ekos"
-        minSdk = 30
-        targetSdk = 34
-        versionCode = 24
-        versionName = "3.8.15"
+        minSdk = 34
+        targetSdk = 36
+        versionCode = 43
+        versionName = "6.3.1"
     }
 
     signingConfigs {
@@ -55,9 +59,11 @@ flutter {
     source = "../.."
 }
 
-// Google hizmetleri eklentisini uygula
+// Google hizmetleri eklentisi
 apply plugin: 'com.google.gms.google-services'
 
 dependencies {
-    implementation 'com.google.android.gms:play-services-auth:19.2.0'
+    implementation 'com.google.android.gms:play-services-auth:21.4.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10"
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }
