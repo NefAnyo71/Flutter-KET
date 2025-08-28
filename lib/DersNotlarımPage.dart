@@ -11,7 +11,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
-
+import 'package:http/http.dart' as http; // Sadece örnek olması için http'yi ekledim, bu projede kullanılmıyor.
 
 // Renk paleti
 class AppColors {

@@ -26,7 +26,7 @@ import 'package:in_app_update/in_app_update.dart';
 
 // Bildirimler için bir instance oluşturun
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+FlutterLocalNotificationsPlugin();
 
 // Firestore instance
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -63,7 +63,7 @@ void main() async {
 Future<void> _checkForAppUpdate() async {
   try {
     final info = await InAppUpdate.checkForUpdate();
-    
+
     if (info.updateAvailability == UpdateAvailability.updateAvailable) {
       // Güncelleme mevcut, esnek güncelleme başlat
       await InAppUpdate.startFlexibleUpdate();
@@ -96,7 +96,7 @@ Future<void> _requestPermissions() async {
   try {
     // Bildirim izni
     PermissionStatus notificationStatus =
-        await Permission.notification.request();
+    await Permission.notification.request();
     if (notificationStatus.isGranted) {
       print("Bildirim izni verildi!");
     }
@@ -143,7 +143,7 @@ Future<Map<String, dynamic>> _validateUserFromFirestore(
     String email, String password) async {
   try {
     final doc =
-        await _firestore.collection('üyelercollection').doc(email).get();
+    await _firestore.collection('üyelercollection').doc(email).get();
     if (doc.exists) {
       final userData = doc.data() as Map<String, dynamic>;
 
@@ -295,7 +295,7 @@ class AccountBlockedScreen extends StatelessWidget {
               const SizedBox(height: 20),
               const Text(
                 'Yönetici tarafından engellendiniz.\n\n'
-                'Olası bir sorunda lütfen aşağıdaki e-posta adresi ile iletişime geçiniz:',
+                    'Olası bir sorunda lütfen aşağıdaki e-posta adresi ile iletişime geçiniz:',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.black87,
@@ -323,7 +323,7 @@ class AccountBlockedScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                  const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
                 child: const Text(
                   'Çıkış Yap',
@@ -445,26 +445,26 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : ElevatedButton(
-                        onPressed: _isLogin ? _login : _signup,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple,
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                        ),
-                        child: Text(
-                          _isLogin ? 'Giriş Yap' : 'Kayıt Ol',
-                          style: const TextStyle(
-                              fontSize: 18, color: Colors.white),
-                        ),
-                      ),
+                  onPressed: _isLogin ? _login : _signup,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                  ),
+                  child: Text(
+                    _isLogin ? 'Giriş Yap' : 'Kayıt Ol',
+                    style: const TextStyle(
+                        fontSize: 18, color: Colors.white),
+                  ),
+                ),
                 const SizedBox(height: 10),
                 TextButton(
                   onPressed: _isLoading
                       ? null
                       : () {
-                          setState(() {
-                            _isLogin = !_isLogin;
-                          });
-                        },
+                    setState(() {
+                      _isLogin = !_isLogin;
+                    });
+                  },
                   child: Text(
                     _isLogin
                         ? 'Hesabınız yok mu? Kayıt olun'
@@ -491,7 +491,7 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
 
       // Önce Firestore'dan kontrol et
       final validationResult =
-          await _validateUserFromFirestore(email, password);
+      await _validateUserFromFirestore(email, password);
 
       if (validationResult['isValid'] == true) {
         // Hesap engellenmiş mi kontrol et
@@ -633,9 +633,9 @@ class _MyAppState extends State<MyApp> {
   Future<void> _initializeNotifications() async {
     try {
       const AndroidInitializationSettings initializationSettingsAndroid =
-          AndroidInitializationSettings('app_icon');
+      AndroidInitializationSettings('app_icon');
       final InitializationSettings initializationSettings =
-          InitializationSettings(
+      InitializationSettings(
         android: initializationSettingsAndroid,
       );
       await flutterLocalNotificationsPlugin.initialize(initializationSettings);
@@ -949,14 +949,14 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userEmail = prefs.getString('email');
-      
+
       if (userEmail != null) {
         // Firestore'dan kullanıcıyı sil
         await _firestore.collection('üyelercollection').doc(userEmail).delete();
-        
+
         // Yerel verileri temizle
         await prefs.clear();
-        
+
         // Login sayfasına yönlendir
         if (mounted) {
           Navigator.of(context).pushReplacement(
@@ -977,17 +977,17 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userEmail = prefs.getString('email');
-      
+
       if (userEmail != null) {
         // Hesabı devre dışı bırak (hesapEngellendi = 1 yaparak)
         await _firestore.collection('üyelercollection').doc(userEmail).update({
           'hesapEngellendi': 1,
           'deactivatedAt': FieldValue.serverTimestamp(),
         });
-        
+
         // Oturumu kapat
         await prefs.clear();
-        
+
         if (mounted) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const SimpleLoginPage()),
@@ -1127,7 +1127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Sağ tarafta çark ikonu
                 IconButton(
                   icon:
-                      const Icon(Icons.settings, color: Colors.white, size: 30),
+                  const Icon(Icons.settings, color: Colors.white, size: 30),
                   onPressed: () => _showAccountMenu(context),
                   tooltip: 'Hesap Ayarları',
                 ),
@@ -1318,12 +1318,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<bool> isInSilentHours() async {
   final prefs = await SharedPreferences.getInstance();
   final isEnabled = prefs.getBool('silent_hours_enabled') ?? false;
-  
+
   if (!isEnabled) return false;
 
   final startTimeStr = prefs.getString('silent_hours_start')?.split(':');
   final endTimeStr = prefs.getString('silent_hours_end')?.split(':');
-  
+
   if (startTimeStr == null || endTimeStr == null) return false;
 
   final now = TimeOfDay.now();
@@ -1331,14 +1331,14 @@ Future<bool> isInSilentHours() async {
     hour: int.parse(startTimeStr[0]),
     minute: int.parse(startTimeStr[1]),
   );
-  
+
   var endTime = TimeOfDay(
     hour: int.parse(endTimeStr[0]),
     minute: int.parse(endTimeStr[1]),
   );
 
   // Eğer bitiş saati başlangıç saatinden önceyse, ertesi günü işaretle
-  if (endTime.hour < startTime.hour || 
+  if (endTime.hour < startTime.hour ||
       (endTime.hour == startTime.hour && endTime.minute <= startTime.minute)) {
     endTime = TimeOfDay(hour: endTime.hour + 24, minute: endTime.minute);
   }

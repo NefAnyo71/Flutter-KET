@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class DersNotlari1 extends StatefulWidget {
+class DersNotlari1 extends StatefulWidget { 
   const DersNotlari1({Key? key}) : super(key: key);
 
   @override
@@ -153,52 +153,43 @@ class _DersNotlari1State extends State<DersNotlari1> {
     }
   }
 
-  void _updateReaction(String docId, String type) async {
-    final docRef = _firestore.collection('ders_notlari').doc(docId);
-    final isLiked = type == 'likes';
-
-    await _firestore.runTransaction((transaction) async {
-      DocumentSnapshot noteSnapshot = await transaction.get(docRef);
-      if (!noteSnapshot.exists) {
-        return;
+  Future<void> _updateReaction(String docId, String type) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String reactionKey = 'reaction_$docId';
+      final String? currentReaction = prefs.getString(reactionKey);
+      
+      final docRef = _firestore.collection('ders_notlari').doc(docId);
+      final isLike = type == 'likes';
+      
+      // If the user is clicking the same reaction again, remove it
+      if ((isLike && currentReaction == 'like') || (!isLike && currentReaction == 'dislike')) {
+        await docRef.update({
+          type: FieldValue.increment(-1),
+        });
+        await prefs.remove(reactionKey);
+      } 
+      // If clicking the opposite reaction
+      else if ((isLike && currentReaction == 'dislike') || (!isLike && currentReaction == 'like')) {
+        await docRef.update({
+          type: FieldValue.increment(1),
+          (isLike ? 'dislikes' : 'likes'): FieldValue.increment(-1),
+        });
+        await prefs.setString(reactionKey, isLike ? 'like' : 'dislike');
       }
-
-      Map<String, dynamic> data = noteSnapshot.data() as Map<String, dynamic>;
-      List<String> likedBy = List<String>.from(data['likedBy'] ?? []);
-      List<String> dislikedBy = List<String>.from(data['dislikedBy'] ?? []);
-
-      bool alreadyLiked = likedBy.contains(userId);
-      bool alreadyDisliked = dislikedBy.contains(userId);
-
-      if (isLiked) {
-        if (alreadyLiked) {
-          likedBy.remove(userId);
-        } else {
-          likedBy.add(userId);
-          if (alreadyDisliked) {
-            dislikedBy.remove(userId);
-          }
-        }
-      } else {
-        if (alreadyDisliked) {
-          dislikedBy.remove(userId);
-        } else {
-          dislikedBy.add(userId);
-          if (alreadyLiked) {
-            likedBy.remove(userId);
-          }
-        }
+      // If no previous reaction
+      else {
+        await docRef.update({
+          type: FieldValue.increment(1),
+        });
+        await prefs.setString(reactionKey, isLike ? 'like' : 'dislike');
       }
-
-      transaction.update(docRef, {
-        'likes': likedBy.length,
-        'dislikes': dislikedBy.length,
-        'likedBy': likedBy,
-        'dislikedBy': dislikedBy,
-      });
-    }).catchError((error) {
+      
+      // Refresh the UI
+      setState(() {});
+    } catch (error) {
       print("Beğeni/Beğenmeme işlemi sırasında hata oluştu: $error");
-    });
+    }
   }
 
   void _toggleFavorite(String docId) async {
