@@ -37,6 +37,9 @@ dependencies:
   flutter_local_notifications:
   flutter_login:
   in_app_update: ^4.2.3
+  path: ^1.9.1
+  syncfusion_flutter_charts: ^26.1.35
+  
 
 
 
