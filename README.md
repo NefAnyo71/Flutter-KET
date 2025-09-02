@@ -1,123 +1,164 @@
-# 🎓 KKU Economics Community App
+# 🎓 EKOS - Kırıkkale Üniversitesi Ekonomi Topluluğu Mobil Uygulaması
 
-Welcome to the official **KKU Economics Community App** – the mobile application of the **Kırıkkale University Economics Community**, developed using Flutter.
-This app is synchronized with our official web platform: [kkuekonomi.vercel.app](https://kkuekonomi.vercel.app/) and shares the same database.
+<div align="center">
+  <img src="assets/images/ekoslogo.png" alt="EKOS Logo" width="200"/>
+  <br>
+  <strong>Kırıkkale Üniversitesi Ekonomi Topluluğu için geliştirilmiş kapsamlı mobil uygulama</strong>
+</div>
+
+## 📱 Proje Hakkında
+
+EKOS, Kırıkkale Üniversitesi Ekonomi Topluluğu için Flutter ile geliştirilmiş modern bir mobil uygulamadır. Uygulama, topluluk etkinlikleri, güncel ekonomi haberleri, ders notları paylaşımı ve sosyal medya entegrasyonu gibi kapsamlı özellikler sunar.
+
+## ✨ Özellikler
+
+### 📚 Eğitim ve Akademik
+- **Ders Notu Paylaşım Sistemi**: Üyeler arası ders notu paylaşımı
+- **Ders Notlarım**: Kişisel ders notları yönetimi
+- **Etkinlik Takvimi**: Akademik ve sosyal etkinlik takibi
+- **Yaklaşan Etkinlikler**: Gelecek etkinlikler için bildirimler
+
+### 📰 Haber ve İletişim
+- **Topluluk Haberleri**: Güncel topluluk duyuruları
+- **Sosyal Medya Entegrasyonu**: Topluluk sosyal medya hesaplarına erişim
+- **Geri Bildirim Sistemi**: Uygulama ve topluluk hakkında görüş bildirme
+- **Anket Sistemi**: Üye görüşlerini toplama
+
+### 💰 Ekonomi ve Finans
+- **Güncel Ekonomi**: Son ekonomik gelişmeler
+- **Canlı Piyasa**: Gerçek zamanlı finansal veriler
+- **Ekonomik Analizler**: Uzman görüşleri ve analizler
+
+### 👥 Topluluk Yönetimi
+- **Üye Kayıt Sistemi**: Yeni üye başvuruları
+- **Üye Profilleri**: Topluluk üyesi bilgileri
+- **Yönetici Paneli**: Topluluk yöneticileri için özel panel
+- **Sponsorlar**: Topluluk sponsorları ve iş birlikleri
+
+### 🔔 Bildirim ve Güvenlik
+- **Push Bildirimleri**: Önemli duyurular için anlık bildirimler
+- **Hesap Güvenliği**: Güvenli giriş ve hesap yönetimi
+- **Çevrimdışı Mod**: İnternet bağlantısı olmadan bazı özellikler
+- **Otomatik Güncelleme**: Uygulama güncellemelerini kontrol etme
+
+## 🛠️ Teknolojiler
+
+### Frontend
+- **Flutter 3.6.1+** - Cross-platform mobil uygulama geliştirme
+- **Dart** - Programlama dili
+- **Material Design 3** - Modern UI/UX tasarımı
+
+### Backend ve Veritabanı
+- **Firebase Core** - Backend altyapısı
+- **Cloud Firestore** - NoSQL veritabanı
+- **Firebase Authentication** - Kullanıcı kimlik doğrulama
+- **Firebase Messaging** - Push bildirimleri
+
+### Önemli Paketler
+- **shared_preferences** - Yerel veri depolama
+- **permission_handler** - Sistem izinleri yönetimi
+- **url_launcher** - Harici bağlantılar
+- **image_picker** - Görsel seçimi ve yükleme
+- **syncfusion_flutter_charts** - Grafik ve çizelgeler
+- **workmanager** - Arka plan görevleri
+- **in_app_update** - Uygulama içi güncelleme
+
+## 🚀 Kurulum
+
+### Gereksinimler
+- Flutter SDK 3.6.1 veya üzeri
+- Dart SDK 3.6.1 veya üzeri
+- Android Studio / VS Code
+- Java 17 (Android geliştirme için)
+- Gradle 8.12
+
+### Adım Adım Kurulum
+
+1. **Flutter'ı yükleyin**:
+   ```bash
+   # Flutter'ın yüklü olduğunu kontrol edin
+   flutter doctor
+   ```
+
+2. **Projeyi klonlayın**:
+   ```bash
+   git clone [repository-url]
+   cd ket
+   ```
+
+3. **Bağımlılıkları yükleyin**:
+   ```bash
+   flutter pub get
+   ```
+
+4. **Firebase yapılandırması**:
+   - `android/app/google-services.json` dosyasını ekleyin
+   - Firebase Console'da projenizi yapılandırın
+
+5. **Uygulamayı çalıştırın**:
+   ```bash
+   flutter run
+   ```
+
+## 📋 Yapılandırma
+
+### Firebase Kurulumu
+1. Firebase Console'da yeni proje oluşturun
+2. Android uygulaması ekleyin (com.example.ekos)
+3. `google-services.json` dosyasını `android/app/` klasörüne ekleyin
+4. Authentication, Firestore ve Messaging servislerini etkinleştirin
+
+### Android İmzalama
+- `android/key.properties` dosyasını yapılandırın
+- Keystore dosyanızı güvenli bir yerde saklayın
+
+## 📱 APK İndirme
+
+**Güncel Sürüm**: v6.0.0
+
+[📥 APK İndir (Dropbox)](https://www.dropbox.com/scl/fi/35pt025320e19sggttkz9/app-release.apk?rlkey=8x358q021noqsqerxpwyc88gv&st=ks9ypcxw&dl=0)
+
+*Not: APK dosyası VirusTotal tarafından taranmış ve güvenli olduğu doğrulanmıştır.*
+
+## 🔧 Geliştirme Notları
+
+### Bilinen Sorunlar
+- **Paket Uyumsuzlukları**: Bazı Flutter paketleri arasında uyumsuzluk sorunları nedeniyle proje gelişimi yavaşlamıştır
+- **Bağlantısız Dosyalar**: Gelecekteki güncellemeler için bazı Dart sayfalarından kullanılmayan importlar ve metodlar kaldırılmıştır. Bu dosyalar şu anda bağlantısız görünebilir ancak gelecek güncellemelerde daha iyi özellikler eklenecektir
+
+### Gelecek Güncellemeler
+- Performans optimizasyonları
+- Yeni UI/UX iyileştirmeleri
+- Ek topluluk özellikleri
+- Daha kapsamlı ekonomi analiz araçları
+
+## 🤝 Katkıda Bulunma
+
+Projeye katkıda bulunmak isteyenler:
+1. Fork yapın
+2. Feature branch oluşturun (`git checkout -b feature/AmazingFeature`)
+3. Değişikliklerinizi commit edin (`git commit -m 'Add some AmazingFeature'`)
+4. Branch'inizi push edin (`git push origin feature/AmazingFeature`)
+5. Pull Request oluşturun
+
+## 📄 Lisans
+
+Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakın.
+
+## 📞 İletişim
+
+- **Geliştirici**: Arif Kerem
+- **E-posta**: arifkerem71@gmail.com
+- **Topluluk**: Kırıkkale Üniversitesi Ekonomi Topluluğu
+
+## 🙏 Teşekkürler
+
+- Kırıkkale Üniversitesi Ekonomi Topluluğu
+- Flutter ve Firebase ekipleri
+- Açık kaynak topluluk katkıcıları
 
 ---
 
-## 🚀 Purpose
-
-This cross-platform project aims to provide a **centralized digital hub** for the members of the Kırıkkale University Economics Community. The goal is to:
-
-* Strengthen academic communication among students,
-* Facilitate the sharing of educational and economic content,
-* Provide real-time economic data and news,
-* Encourage participation in community events and activities.
-
----
-
-## 📱 Platform Overview
-
-* 📲 **Mobile App:** Built with Flutter and compatible with Android & iOS devices. [For android](https://play.google.com/store/apps/details?id=com.arifozdemir.ekos&hl=tr)
-* 🌐 **Web App:** Accessible via [kkuekonomi.vercel.app](https://kkuekonomi.vercel.app/).
-* 🔗 **Shared Database:** Both platforms are connected to the same backend and database, ensuring synchronized user experience.
-
----
-
-## 📌 Features
-
-* **Member Registration System**
-  Allows students to register with their university credentials to access community features.
-
-* **Event Calendar**
-  Displays upcoming seminars, tournaments, workshops, and community activities in an interactive calendar.
-
-* **Community News**
-  Provides up-to-date announcements, bulletins, and news related to student affairs and the community.
-
-* **Current Economic Content**
-  Includes articles and updates on national and international economic developments curated for students.
-
-* **Live Market Data**
-  Features real-time information on foreign exchange rates, gold prices, and other financial indicators.
-
-* **Social Media Links**
-  Provides direct access to the community's social media platforms like Instagram and Twitter.
-
-* **Survey System**
-  Allows users to vote on current issues, event participation, or express preferences through polls.
-
-* **Feedback Form**
-  A place where members can report bugs, suggest new features, or share general thoughts.
-
-* **Sponsor Promotions**
-  Displays active sponsors of the community and shares special deals or announcements.
-
-* **Admin Panel**
-  A restricted interface for authorized administrators to manage users, events, and content.
-
-* **Course Notes Section**
-  Contains uploaded lecture notes and materials categorized by economics courses.
-
----
-
-## 🛠️ Technologies Used
-
-* **Frontend (Mobile App):** Flutter & Dart
-* **Frontend (Web App):** HTML5, CSS, JavaScript
-* **Backend (Shared):** Firebase   
-* **Database:** Firestore Database
-
----
-
-## 🌟 Upcoming Features
-
-* Responsive improvements for tablet and web
-* Dark Mode
-* Push Notification System
-* Internship & Career Opportunities Section
-* In-app Community Forum
-
----
-
-## 🤝 Contributors
-
-* **Project Lead:** \[Arif Özdemir]
-* **Community:** Kırıkkale University Economics Community
-
----
-
-## 📬 Contact
-
-📧 For questions, suggestions or contributions: `arifkerem71@gmail.com`
-📸 Instagram: [@kkuekonomi71.](https://www.instagram.com/kkuekonomi/)
-🌐 Web: [kkuekonomi.vercel.app](https://kkuekonomi.vercel.app/)
-
-⚙️ Flutter Setup Requirements (Gradle 8.1.2 & Java 17)
-To run and build this Flutter project, make sure your development environment is configured as follows:
-
-✅ Prerequisites
-Flutter SDK: 3.13 or later
-
-Dart SDK: Included with Flutter
-
-Gradle Version: 8.1.2
-
-Java Version: 17 (LTS)
-
-📦 Setup Instructions
-Install Java 17:
-Download and install from the official Oracle JDK 17 or use OpenJDK.
-
-
-Output should confirm Java 17.
-
-Use Gradle 8.1.2:
-Set distributionUrl in android/gradle/wrapper/gradle-wrapper.properties:
-
-properties
-Copy
-Edit
-distributionUrl=https\://services.gradle.org/distributions/gradle-8.1.2-all.zip
-
-
+<div align="center">
+  <strong>EKOS ile ekonomi dünyasında bir adım önde olun! 📈</strong>
+</div>
