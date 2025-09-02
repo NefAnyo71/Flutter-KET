@@ -587,5 +587,5 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
   <img src="https://img.shields.io/badge/Flutter-3.6.1+-blue?logo=flutter" alt="Flutter">
   <img src="https://img.shields.io/badge/Dart-3.6.1+-blue?logo=dart" alt="Dart">
   <img src="https://img.shields.io/badge/Firebase-Latest-orange?logo=firebase" alt="Firebase">
-  <img src="https://img.shields.io/badge/Version-6.0.0-green" alt="Version">
+  <img src="https://img.shields.io/badge/Version-6.6.6-green" alt="Version">
 </div>
