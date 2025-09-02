@@ -1,20 +1,22 @@
-# 🎓 EKOS - Kırıkkale Üniversitesi Ekonomi Topluluğu Mobil Uygulaması
+# 🎓 KET - Kırıkkale Üniversitesi Ekonomi Topluluğu Mobil Uygulaması
 
 <div align="center">
   <img src="assets/images/ekoslogo.png" alt="EKOS Logo" width="200"/>
   <br>
-  <strong>Kırıkkale Üniversitesi Ekonomi Topluluğu için geliştirilmiş kapsamlı mobil uygulama</strong>
+  <strong>Kırıkkale Üniversitesi Ekonomi Topluluğu için geliştirdiğim flutter telefon uygulamam</strong>
 </div>
 
 ## 📱 Proje Hakkında
 
-EKOS, Kırıkkale Üniversitesi Ekonomi Topluluğu için Flutter ile geliştirilmiş modern bir mobil uygulamadır. Uygulama, topluluk etkinlikleri, güncel ekonomi haberleri, ders notları paylaşımı ve sosyal medya entegrasyonu gibi kapsamlı özellikler sunar.
+KET(kku ekonomi toplululuğu), Kırıkkale Üniversitesi Ekonomi Topluluğu için Flutter ile geliştirilmiş modern bir mobil uygulamadır. Uygulama, topluluk etkinlikleri, güncel ekonomi haberleri, ders notları paylaşımı ve sosyal medya entegrasyonu gibi kapsamlı özellikler sunar.
 
-**Sürüm**: 6.0.0  
+**Sürüm**: 6.6.6
 **Geliştirici**: Arif Kerem  
 **Platform**: Android (iOS desteği mevcut)  
 **Dil**: Dart/Flutter  
-**Veritabanı**: Firebase Firestore
+**Veritabanı**: Firebase Firestore  
+**Minimum SDK**: Android API 34 (Android 13)  
+**Hedef SDK**: Android API 36 (Android 16)
 
 ## ✨ Özellikler
 
@@ -221,11 +223,23 @@ EKOS, Kırıkkale Üniversitesi Ekonomi Topluluğu için Flutter ile geliştiril
 
 ### 🔐 Yönetici Modülleri
 
-#### `admin_yaklasan_etkinlikler.dart` - Etkinlik Yönetimi
-- **İşlev**: Yöneticiler için etkinlik ekleme/düzenleme
+#### `admin_yaklasan_etkinlikler.dart` - Etkinlik Yönetimi (Admin)
+- **İşlev**: Yöneticiler için yaklaşan etkinlik ekleme/düzenleme
+- **Özellikler**:
+  - Etkinlik başlığı, detay ve tarih yönetimi
+  - Görsel URL ekleme
+  - Etkinlik silme ve güncelleme
+  - Firebase Firestore entegrasyonu
+  - Tarih ve saat seçici
 
-#### `admin_survey_page.dart` - Anket Yönetimi
-- **İşlev**: Anket sonuçlarını görüntüleme ve yönetme
+#### `admin_survey_page.dart` - Anket Sonuçları Yönetimi
+- **İşlev**: Anket sonuçlarını görüntüleme ve analiz etme
+- **Özellikler**:
+  - Uygulama değerlendirme istatistikleri
+  - Özel bar grafik sistemi
+  - Kullanıcı geri bildirimlerini kategorize etme
+  - Topluluk, uygulama ve etkinlik geri bildirimleri
+  - Gerçek zamanlı veri güncelleme
 
 #### `cleaner_admin_page.dart` - Temizlik Yönetimi
 - **İşlev**: Veritabanı temizleme ve bakım işlemleri
@@ -240,6 +254,87 @@ EKOS, Kırıkkale Üniversitesi Ekonomi Topluluğu için Flutter ile geliştiril
 - **İşlev**: Öğrenci performans değerlendirme sistemi
 
 ### 📊 Veri Modelleri ve Yardımcı Dosyalar
+
+#### `ders_notlari1_new.dart` - Gelişmiş Ders Notu Sistemi
+- **İşlev**: Yeni nesil ders notu paylaşım sistemi
+- **Özellikler**:
+  - Kapsamlı yasal uyarı sistemi
+  - Kullanıcı onay mekanizması
+  - Favori ekleme sistemi
+  - Beğeni/beğenmeme sistemi
+  - İndirme sayacı
+  - Anonim kullanıcı desteği
+  - Gelişmiş arama ve filtreleme
+
+#### `DersNotlariAdmin1.dart` - Ders Notları Yönetici Paneli
+- **İşlev**: Yöneticiler için ders notu yönetimi
+- **Özellikler**:
+  - Not ekleme/düzenleme/silme
+  - Arama ve filtreleme
+  - Görsel destekli not kartları
+  - Dönem ve sınav türü yönetimi
+
+#### `DersNotlarimPage.dart` - Kişisel Ders Notları
+- **İşlev**: Kullanıcıların kişisel ders notlarını yönetmesi
+- **Özellikler**:
+  - Ders ekleme/silme
+  - Vize ve final fotoğrafları
+  - Yerel depolama sistemi
+  - Görsel yönetimi
+
+#### `uye_kayit_bilgileri.dart` - Üye Kayıt Bilgileri Yönetimi
+- **İşlev**: Kayıtlı üyelerin bilgilerini görüntüleme ve yönetme
+- **Özellikler**:
+  - Kullanıcı arama ve filtreleme sistemi
+  - Sayfalama (pagination) desteği
+  - Kullanıcı hesap durumu yönetimi (aktif/engelli)
+  - Şifre görünürlük kontrolü
+  - Veri dışa aktarma (CSV formatında)
+  - Detaylı kullanıcı profil görüntüleme
+  - Sıralama ve filtreleme seçenekleri
+
+#### `oylama.dart` - Oylama Sistemi
+- **İşlev**: Topluluk oylamaları oluşturma ve yönetme
+- **Özellikler**:
+  - Çoktan seçmeli oylama
+  - Kullanıcı başına tek oy hakkı
+  - Gerçek zamanlı sonuç görüntüleme
+  - Oylama silme yetkisi
+  - SharedPreferences ile oy takibi
+
+#### `Cerezler.dart` - Site Oturum Takibi
+- **İşlev**: Web sitesi oturum verilerini analiz etme
+- **Özellikler**:
+  - IP adresi takibi
+  - Oturum süresi analizi
+  - Kullanıcı onay durumu
+  - Çıkış takibi
+  - Benzersiz ziyaretçi sayısı
+
+#### `BasvuruSorgulama.dart` - Başvuru Yönetim Sistemi
+- **İşlev**: Gezi ve etkinlik başvurularını yönetme
+- **Özellikler**:
+  - Başvuru arama ve filtreleme
+  - Ödeme durumu takibi
+  - Başvuru silme (çift onay sistemi)
+  - Gerçek zamanlı başvuru sayısı
+  - Detaylı başvuru bilgileri
+
+#### `adminFeedBack.dart` - Geri Bildirim Yönetimi
+- **İşlev**: Kullanıcı geri bildirimlerini yönetme
+- **Özellikler**:
+  - Firebase entegrasyonu
+  - Geri bildirim listeleme
+  - Yenileme özelliği
+  - Gradient arka plan tasarımı
+
+#### `community_news2_page.dart` - Topluluk Haberleri Görüntüleme
+- **İşlev**: Topluluk haberlerini kullanıcılara gösterme
+- **Özellikler**:
+  - Tarih sıralı haber listeleme
+  - Görsel destekli haberler
+  - Gradient arka plan
+  - Gerçek zamanlı haber güncelleme
 
 #### `uyekayıt.dart` / `uye_kayit.dart` - Üye Kayıt
 - **İşlev**: Yeni üye kayıt işlemleri
@@ -258,6 +353,8 @@ EKOS, Kırıkkale Üniversitesi Ekonomi Topluluğu için Flutter ile geliştiril
 - Android Studio / VS Code
 - Java 17 (Android geliştirme için)
 - Gradle 8.12
+- Firebase hesabı ve proje yapılandırması
+- Android SDK (API Level 21 veya üzeri)
 
 ### Adım Adım Kurulum
 
@@ -292,195 +389,200 @@ EKOS, Kırıkkale Üniversitesi Ekonomi Topluluğu için Flutter ile geliştiril
 ### Firebase Kurulumu
 1. Firebase Console'da yeni proje oluşturun
 2. Android uygulaması ekleyin (com.example.ekos)
-3. `google-services.json` dosyasını `android/app/` klasörüne ekleyin
-4. Authentication, Firestore ve Messaging servislerini etkinleştirin
+3. `google-services.json` dosyasını `android/app/` klasörüne yerleştirin
+4. Firebase Authentication, Firestore, Cloud Messaging ve Realtime Database'i etkinleştirin
+5. Güvenlik kurallarını yapılandırın
 
-### Android İmzalama
-- `android/key.properties` dosyasını yapılandırın
-- Keystore dosyanızı güvenli bir yerde saklayın
+### Gerekli İzinler (Android)
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.VIBRATE" />
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+```
 
-## 📱 APK İndirme
+### Uygulama Yapılandırması
+1. `pubspec.yaml` dosyasındaki bağımlılıkları kontrol edin
+2. Firebase yapılandırma dosyalarını yerleştirin
+3. Android imzalama sertifikalarını yapılandırın
+4. Bildirim kanallarını ayarlayın
 
-**Güncel Sürüm**: v6.0.0
+## 🔧 Geliştirme Ortamı
 
-[📥 APK İndir (Dropbox)](https://www.dropbox.com/scl/fi/35pt025320e19sggttkz9/app-release.apk?rlkey=8x358q021noqsqerxpwyc88gv&st=ks9ypcxw&dl=0)
+### Debug Modu
+```bash
+flutter run --debug
+```
 
-*Not: APK dosyası VirusTotal tarafından taranmış ve güvenli olduğu doğrulanmıştır.*
+### Release Modu
+```bash
+flutter build apk --release
+```
 
-## 🏗️ Kod Yapısı ve Organizasyon
+### Profil Modu (Performans Analizi)
+```bash
+flutter run --profile
+```
+
+## 📱 Uygulama Mimarisi
 
 ### Klasör Yapısı
 ```
 lib/
-├── main.dart                    # Ana uygulama giriş noktası
-├── services/                    # Servis katmanı
-│   ├── firebase_service.dart    # Firebase işlemleri
-│   ├── notification_service.dart # Bildirim servisleri
-│   └── local_storage_service.dart # Yerel depolama
-├── pages/                       # Sayfa bileşenleri
-│   ├── admin/                   # Yönetici sayfaları
-│   ├── user/                    # Kullanıcı sayfaları
-│   └── shared/                  # Ortak sayfalar
-└── utils/                       # Yardımcı fonksiyonlar
+├── services/           # Servis katmanı
+│   ├── local_storage_service.dart
+│   └── notification_service.dart
+├── admin/             # Yönetici paneli
+├── pages/             # Ana sayfalar
+├── widgets/           # Yeniden kullanılabilir bileşenler
+└── main.dart          # Uygulama giriş noktası
 ```
 
 ### Veri Akışı
-1. **Kullanıcı Girişi**: SharedPreferences + Firebase Auth
-2. **Veri Çekme**: Firebase Firestore + HTTP API
-3. **Yerel Depolama**: SharedPreferences + Cache
-4. **Bildirimler**: Firebase Messaging + Local Notifications
-5. **Dosya İşlemleri**: Firebase Storage + Local Storage
+1. **Firebase Firestore**: Ana veritabanı
+2. **SharedPreferences**: Yerel ayarlar
+3. **Firebase Auth**: Kullanıcı kimlik doğrulama
+4. **Firebase Messaging**: Push bildirimleri
 
-### API Entegrasyonları
-- **Anadolu Ajansı RSS**: Ekonomi haberleri
-- **CoinGecko API**: Kripto para verileri
-- **Firebase APIs**: Tüm backend işlemleri
-- **Google Services**: Kimlik doğrulama
+## 🔐 Güvenlik Özellikleri
 
-## 🔧 Geliştirme Notları
+### Kullanıcı Kimlik Doğrulama
+- Firebase Authentication entegrasyonu
+- Anonim giriş desteği
+- Hesap engelleme sistemi
+- Güvenli şifre yönetimi
 
-### Mimari Yapı
-- **MVC Pattern**: Model-View-Controller mimarisi
-- **State Management**: StatefulWidget ve setState kullanımı
-- **Firebase Integration**: Tam Firebase ekosistemi entegrasyonu
-- **Responsive Design**: Farklı ekran boyutları için uyumlu tasarım
-
-### Güvenlik Özellikleri
-- Yönetici paneli için güvenli giriş sistemi
-- Kullanıcı hesap engelleme mekanizması
+### Veri Güvenliği
+- Firestore güvenlik kuralları
+- Kullanıcı verilerinin şifrelenmesi
+- API anahtarlarının güvenli saklanması
 - Yasal uyarı ve kullanım koşulları
-- Anonim geri bildirim sistemi
-- Veri şifreleme ve güvenli depolama
 
-### Performans Optimizasyonları
-- Lazy loading ile sayfa yükleme
-- Image caching ve optimizasyon
-- Efficient Firebase queries
-- Background task management
-- Memory leak prevention
+## 📊 Performans Optimizasyonu
 
-### Bilinen Sorunlar
-- **Paket Uyumsuzlukları**: Bazı Flutter paketleri arasında uyumsuzluk sorunları
-- **Bağlantısız Dosyalar**: Gelecekteki güncellemeler için hazırlanan ancak henüz aktif olmayan modüller
-- **Bağlantısız Dosyalar**: Tasarımsal olarak her telefonda orantılı değil malesef şu anlık için main.dart kodunda orantıladım tasarımları yakında düzelteceğim.
+### Veritabanı Optimizasyonu
+- Firestore indeksleme
+- Sayfalama (pagination)
+- Gerçek zamanlı dinleyiciler
+- Önbellek yönetimi
 
+### UI/UX Optimizasyonu
+- Lazy loading
+- Görsel optimizasyonu
+- Responsive tasarım
+- Karanlık/aydınlık mod desteği
 
-### Gelecek Güncellemeler
-- iOS platform desteği genişletme
-- Performans optimizasyonları
-- Yeni UI/UX iyileştirmeleri
-- Ek topluluk özellikleri
-- Daha kapsamlı ekonomi analiz araçları
-- Offline mode desteği
+## 🧪 Test Etme
 
-## 🤝 Katkıda Bulunma
-
-Projeye katkıda bulunmak isteyenler:
-1. Fork yapın
-2. Feature branch oluşturun 
-3. Değişikliklerinizi commit edin 
-4. Branch'inizi push edin 
-5. Pull Request oluşturun
-
-### Geliştirme Kuralları
-- Dart/Flutter best practices'i takip edin
-- Kod yorumlarını Türkçe yazın
-- Commit mesajlarını açıklayıcı yapın
-- Test yazımına önem verin
-- UI/UX tutarlılığını koruyun
-
-## 📊 Teknik Detaylar
-
-### Veritabanı Şeması
-```
-Firestore Collections:
-├── üyelercollection/           # Kullanıcı hesapları
-├── ders_notlari/              # Ders notları
-├── etkinlikler/               # Etkinlik takvimi
-├── yaklasan_etkinlikler/      # Yaklaşan etkinlikler
-├── toplulukhaberleri2/        # Topluluk haberleri
-├── surveys/                   # Anket verileri
-├── feedback/                  # Geri bildirimler
-├── haber_raporlari/          # Haber raporları
-└── users/                     # Kullanıcı tercihleri
+### Unit Testler
+```bash
+flutter test
 ```
 
-### Kullanılan Paketler ve Sürümleri
-```yaml
-dependencies:
-  flutter: sdk
-  firebase_core: latest
-  cloud_firestore: latest
-  firebase_auth: latest
-  firebase_messaging: latest
-  shared_preferences: latest
-  http: latest
-  url_launcher: latest
-  image_picker: latest
-  syncfusion_flutter_charts: ^26.1.35
-  workmanager: latest
-  flutter_local_notifications: latest
-  in_app_update: ^4.2.3
-  permission_handler: latest
-  intl: latest
-  share_plus: latest
+### Widget Testleri
+```bash
+flutter test test/widget_test.dart
 ```
 
-### Performans Metrikleri
-- **Uygulama Boyutu**: ~50MB (APK)
-- **Başlatma Süresi**: <3 saniye
-- **Firebase Latency**: <500ms
-- **Memory Usage**: <100MB
-- **Battery Optimization**: Background tasks optimized
+### Entegrasyon Testleri
+```bash
+flutter drive --target=test_driver/app.dart
+```
 
-## 🔒 Güvenlik ve Gizlilik
+## 📈 Analitik ve İzleme
 
-### Veri Koruma
-- Kullanıcı şifreleri hash'lenerek saklanır
-- Kişisel veriler şifrelenir
-- GDPR uyumlu veri işleme
-- Anonim geri bildirim sistemi
+### Firebase Analytics
+- Kullanıcı davranış analizi
+- Ekran görüntüleme istatistikleri
+- Olay takibi
+- Çökme raporları
 
-### İzinler
-- **İnternet**: API çağrıları için
-- **Depolama**: Dosya indirme için
-- **Bildirim**: Push notification için
-- **Kamera**: Profil fotoğrafı için (opsiyonel)
+### Performans İzleme
+- Firebase Performance Monitoring
+- Ağ istekleri analizi
+- Uygulama başlatma süreleri
+- Bellek kullanımı
+
+## 🚀 Dağıtım
+
+### Google Play Store
+1. Uygulama imzalama
+2. APK/AAB oluşturma
+3. Store listeleme
+4. Sürüm yönetimi
+
+### Firebase App Distribution
+1. Test kullanıcıları ekleme
+2. Beta sürüm dağıtımı
+3. Geri bildirim toplama
+
+## 🔄 Güncelleme Sistemi
+
+### Otomatik Güncelleme
+- In-app update API
+- Zorunlu güncelleme kontrolü
+- Kullanıcı bilgilendirme
+- Güncelleme durumu takibi
+
+## 📞 Destek ve İletişim
+
+### Geliştirici İletişim
+- **E-posta**: [geliştirici e-postası]
+- **GitHub**: [repository linki]
+- **Topluluk**: Kırıkkale Üniversitesi Ekonomi Topluluğu
+
+### Hata Bildirimi
+1. GitHub Issues kullanın
+2. Detaylı hata açıklaması ekleyin
+3. Ekran görüntüleri paylaşın
+4. Cihaz ve sürüm bilgilerini belirtin
 
 ## 📄 Lisans
 
-Bu proje MIT Lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakın.
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakınız.
 
-## 📞 İletişim
+## 🙏 Katkıda Bulunanlar
 
-- **Geliştirici**: Arif Kerem
-- **E-posta**: arifkerem71@gmail.com
-- **Topluluk**: Kırıkkale Üniversitesi Ekonomi Topluluğu
-- **Instagram**: [@kkuekonomi](https://www.instagram.com/kkuekonomi/)
-- **Twitter**: [@kkuekonomi1](https://x.com/kkuekonomi1)
+- **Arif Kerem** - Ana Geliştirici
+- **Kırıkkale Üniversitesi Ekonomi Topluluğu** - Proje Sponsoru
 
-## 🙏 Teşekkürler
+## 📝 Sürüm Geçmişi
 
-- Kırıkkale Üniversitesi Ekonomi Topluluğu
-- Flutter ve Firebase ekipleri
-- Açık kaynak topluluk katkıcıları
-- Anadolu Ajansı (RSS feed için)
-- CoinGecko (Kripto para verileri için)
-- Syncfusion (Chart kütüphanesi için)
+### v6.0.0 (Güncel)
+- Gelişmiş ders notu paylaşım sistemi
+- Yönetici paneli iyileştirmeleri
+- Bildirim sistemi güncellemeleri
+- Performans optimizasyonları
 
-## 📈 İstatistikler
+### v5.x.x
+- Temel özellikler
+- Firebase entegrasyonu
+- Kullanıcı arayüzü geliştirmeleri
 
-- **Toplam Kod Satırı**: ~21.000+ satır
-- **Dart Dosya Sayısı**: 30+ dosya
-- **Özellik Sayısı**: 25+ ana özellik
-- **Desteklenen Dil**: Türkçe
-- **Platform**: Android 
-- **Platform**: Bazı dart dosyalarını push'lamadım.
+## 🔮 Gelecek Planları
+
+### Yakın Dönem
+- iOS desteği genişletme
+- Çevrimdışı mod iyileştirmeleri
+- Daha fazla dil desteği
+- Gelişmiş analitik
+
+### Uzun Dönem
+- Web uygulaması geliştirme
+- Yapay zeka entegrasyonu
+- Sosyal özellikler genişletme
+- Mikroservis mimarisi
 
 ---
 
+**Not**: Bu README dosyası sürekli güncellenmektedir. En güncel bilgiler için repository'yi takip edin.
+
 <div align="center">
-  <strong>EKOS ile ekonomi dünyasında bir adım önde olun! 📈</strong>
+  <strong>KET ile ekonomi dünyasında bir adım önde olun! 📈</strong>
   <br><br>
   <img src="https://img.shields.io/badge/Flutter-3.6.1+-blue?logo=flutter" alt="Flutter">
   <img src="https://img.shields.io/badge/Dart-3.6.1+-blue?logo=dart" alt="Dart">
