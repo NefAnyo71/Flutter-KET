@@ -105,7 +105,7 @@ KET(kku ekonomi toplululuğu), Kırıkkale Üniversitesi Ekonomi Topluluğu içi
 #### `admin_panel_page.dart` - Yönetici Paneli
 - **İşlev**: Yönetici girişi ve yönetim araçları
 - **Özellikler**:
-  - Güvenli yönetici girişi (kullanıcı adı: kkuekonomi71)
+  - Güvenli yönetici girişi 
   - Etkinlik yönetimi
   - Topluluk haberleri yönetimi
   - Oylama sistemi yönetimi
