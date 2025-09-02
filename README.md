@@ -547,7 +547,7 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 
 ## 🙏 Katkıda Bulunanlar
 
-- **Arif Kerem** - Ana Geliştirici
+- **Arif** - Ana Geliştirici
 - **Kırıkkale Üniversitesi Ekonomi Topluluğu** - Proje Sponsoru
 
 ## 📝 Sürüm Geçmişi
