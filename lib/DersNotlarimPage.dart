@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-import 'package:path/path.dart' as path;
 import 'services/local_storage_service.dart';
 
 class DersNotlarim extends StatefulWidget {

@@ -5,12 +5,16 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'dart:math';
 
-// Data model for the chart
+// Data model for the chart, now includes OHLC data for candlesticks
 class ChartData {
-  ChartData(this.x, this.y);
-  final double x;
-  final double y;
+  ChartData(this.time, this.open, this.high, this.low, this.close);
+  final DateTime time;
+  final double open;
+  final double high;
+  final double low;
+  final double close;
 }
 
 class LiveMarketPage extends StatefulWidget {
@@ -32,9 +36,11 @@ class _LiveMarketPageState extends State<LiveMarketPage>
   final Map<String, bool> _expandedCards = {};
   final Map<String, bool> _favorites = {};
   String _searchQuery = '';
+  List<Map<String, dynamic>> _comparisonList = [];
 
-  // Timer for periodic refresh (This is now removed)
-  // Timer? _timer;
+  // Yeni: Seçilen öğeleri tutmak için Set kullanılıyor
+  final Set<String> _selectedItems = {};
+  final Map<String, dynamic> _selectedItemData = {};
 
   final Color _positiveColor = const Color(0xFF00E676);
   final Color _negativeColor = const Color(0xFFFF5252);
@@ -58,6 +64,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     'picoin': Icons.currency_exchange,
   };
 
+  // Sadece Türk hisselerini içerecek şekilde güncellendi.
   final Map<String, IconData> _stockIcons = {
     'XU100': Icons.show_chart,
     'GARAN': Icons.account_balance,
@@ -69,11 +76,14 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     'EREGL': Icons.build,
     'KCHOL': Icons.business,
     'TCELL': Icons.signal_cellular_alt,
-    'AAPL': Icons.apple,
-    'MSFT': Icons.laptop_mac,
-    'GOOGL': Icons.language,
-    'AMZN': Icons.local_shipping,
-    'TSLA': Icons.electric_car,
+    'ISCTR': Icons.account_balance_wallet,
+    'SISE': Icons.blur_on,
+    'SAHOL': Icons.business_center,
+    'PGSUS': Icons.airplanemode_on,
+    'FROTO': Icons.directions_car,
+    'PETKM': Icons.local_gas_station,
+    'TUPRS': Icons.oil_barrel,
+    'KOZAL': Icons.diamond,
   };
 
   @override
@@ -91,11 +101,6 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     ).animate(_controller);
 
     fetchMarketData();
-
-    // Removed the periodic refresh timer
-    // _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
-    //   fetchMarketData();
-    // });
   }
 
   Future<void> fetchMarketData() async {
@@ -115,24 +120,28 @@ class _LiveMarketPageState extends State<LiveMarketPage>
         throw Exception('Failed to load crypto data.');
       }
 
-      // Simulate stock data
+      // Amerikan hisseleri kaldırıldı ve yerine daha fazla Türk hissesi eklendi.
+      // Veriler simülasyon amaçlıdır.
       await Future.delayed(const Duration(seconds: 1));
       stockData = [
-        {'symbol': 'XU100', 'name': 'BIST 100', 'price': 8543.67, 'change': 1.23, 'volume': 23456789},
-        {'symbol': 'GARAN', 'name': 'Garanti Bankası', 'price': 45.80, 'change': -0.65, 'volume': 12345678},
-        {'symbol': 'AKBNK', 'name': 'Akbank', 'price': 38.45, 'change': 0.89, 'volume': 9876543},
-        {'symbol': 'THYAO', 'name': 'Türk Hava Yolları', 'price': 215.60, 'change': 2.34, 'volume': 5678901},
-        {'symbol': 'ASELS', 'name': 'Aselsan', 'price': 132.75, 'change': -1.12, 'volume': 3456789},
-        {'symbol': 'KOZAA', 'name': 'Koza Anadolu Metal', 'price': 178.90, 'change': 3.21, 'volume': 2345678},
-        {'symbol': 'SASA', 'name': 'Sasa Polyester', 'price': 67.45, 'change': -2.11, 'volume': 3456789},
-        {'symbol': 'EREGL', 'name': 'Ereğli Demir Çelik', 'price': 42.30, 'change': 0.75, 'volume': 4567890},
-        {'symbol': 'KCHOL', 'name': 'Koç Holding', 'price': 125.80, 'change': 1.45, 'volume': 5678901},
-        {'symbol': 'TCELL', 'name': 'Turkcell', 'price': 38.90, 'change': -0.35, 'volume': 6789012},
-        {'symbol': 'AAPL', 'name': 'Apple Inc.', 'price': 175.43, 'change': 1.23, 'volume': 98765432},
-        {'symbol': 'MSFT', 'name': 'Microsoft', 'price': 338.11, 'change': 0.89, 'volume': 87654321},
-        {'symbol': 'GOOGL', 'name': 'Alphabet (Google)', 'price': 138.25, 'change': -0.45, 'volume': 76543210},
-        {'symbol': 'AMZN', 'name': 'Amazon', 'price': 145.18, 'change': 2.11, 'volume': 65432109},
-        {'symbol': 'TSLA', 'name': 'Tesla', 'price': 245.60, 'change': -1.78, 'volume': 54321098},
+        {'symbol': 'XU100', 'name': 'BIST 100', 'price': 8543.67, 'change': 1.23, 'volume': 23456789, 'isCrypto': false},
+        {'symbol': 'GARAN', 'name': 'Garanti Bankası', 'price': 45.80, 'change': -0.65, 'volume': 12345678, 'isCrypto': false},
+        {'symbol': 'AKBNK', 'name': 'Akbank', 'price': 38.45, 'change': 0.89, 'volume': 9876543, 'isCrypto': false},
+        {'symbol': 'THYAO', 'name': 'Türk Hava Yolları', 'price': 215.60, 'change': 2.34, 'volume': 5678901, 'isCrypto': false},
+        {'symbol': 'ASELS', 'name': 'Aselsan', 'price': 132.75, 'change': -1.12, 'volume': 3456789, 'isCrypto': false},
+        {'symbol': 'KOZAA', 'name': 'Koza Anadolu Metal', 'price': 178.90, 'change': 3.21, 'volume': 2345678, 'isCrypto': false},
+        {'symbol': 'SASA', 'name': 'Sasa Polyester', 'price': 67.45, 'change': -2.11, 'volume': 3456789, 'isCrypto': false},
+        {'symbol': 'EREGL', 'name': 'Ereğli Demir Çelik', 'price': 42.30, 'change': 0.75, 'volume': 4567890, 'isCrypto': false},
+        {'symbol': 'KCHOL', 'name': 'Koç Holding', 'price': 125.80, 'change': 1.45, 'volume': 5678901, 'isCrypto': false},
+        {'symbol': 'TCELL', 'name': 'Turkcell', 'price': 38.90, 'change': -0.35, 'volume': 6789012, 'isCrypto': false},
+        {'symbol': 'ISCTR', 'name': 'İş Bankası', 'price': 22.50, 'change': 1.15, 'volume': 8765432, 'isCrypto': false},
+        {'symbol': 'SISE', 'name': 'Şişecam', 'price': 48.10, 'change': 0.95, 'volume': 7654321, 'isCrypto': false},
+        {'symbol': 'SAHOL', 'name': 'Sabancı Holding', 'price': 65.75, 'change': -0.78, 'volume': 6543210, 'isCrypto': false},
+        {'symbol': 'PGSUS', 'name': 'Pegasus', 'price': 650.40, 'change': 2.80, 'volume': 5432109, 'isCrypto': false},
+        {'symbol': 'FROTO', 'name': 'Ford Otosan', 'price': 980.50, 'change': 1.55, 'volume': 4321098, 'isCrypto': false},
+        {'symbol': 'PETKM', 'name': 'Petkim', 'price': 15.60, 'change': -1.30, 'volume': 3210987, 'isCrypto': false},
+        {'symbol': 'TUPRS', 'name': 'Tüpraş', 'price': 1450.00, 'change': 3.10, 'volume': 2109876, 'isCrypto': false},
+        {'symbol': 'KOZAL', 'name': 'Koza Altın', 'price': 250.25, 'change': -0.90, 'volume': 1098765, 'isCrypto': false},
       ];
 
       // Add Pi Coin to the crypto list
@@ -144,7 +153,8 @@ class _LiveMarketPageState extends State<LiveMarketPage>
         'total_volume': 1234567,
         'market_cap': 56789012,
         'id': 'picoin',
-        'image': 'https://s2.coinmarketcap.com/static/img/coins/64x64/3336.png'
+        'image': 'https://s2.coinmarketcap.com/static/img/coins/64x64/3336.png',
+        'isCrypto': true,
       };
       cryptoData.add(piCoinData);
 
@@ -154,17 +164,28 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     } catch (e) {
       setState(() {
         isLoading = false;
-        errorMessage = 'Failed to load data. Please try again later.';
+        errorMessage = 'Piyasa verileri yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.';
       });
     }
   }
 
-  String formatPrice(dynamic price) {
+  String formatPrice(dynamic price, bool isCrypto) {
     double priceValue = price is int ? price.toDouble() : price;
-    if (priceValue > 1) {
-      return NumberFormat.currency(symbol: '\$', decimalDigits: 2).format(priceValue);
+
+    if (isCrypto) {
+      // For cryptocurrencies, show in USDT with appropriate decimal places
+      if (priceValue > 1) {
+        return '${NumberFormat("#,##0.00").format(priceValue)} USDT';
+      } else {
+        return '${NumberFormat("#,##0.000000").format(priceValue)} USDT';
+      }
     } else {
-      return NumberFormat.currency(symbol: '\$', decimalDigits: 6).format(priceValue);
+      // For stocks, show in TL
+      if (priceValue > 1) {
+        return '${NumberFormat.currency(symbol: '₺', decimalDigits: 2).format(priceValue)}';
+      } else {
+        return '${NumberFormat.currency(symbol: '₺', decimalDigits: 2).format(priceValue)}';
+      }
     }
   }
 
@@ -218,6 +239,25 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     });
   }
 
+  void _toggleSelection(Map<String, dynamic> item) {
+    final String id = item.containsKey('id') ? item['id'] : item['symbol'];
+    setState(() {
+      if (_selectedItems.contains(id)) {
+        _selectedItems.remove(id);
+        _selectedItemData.remove(id);
+      } else {
+        if (_selectedItems.length < 2) {
+          _selectedItems.add(id);
+          _selectedItemData[id] = item;
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Sadece iki hisse karşılaştırabilirsiniz.')),
+          );
+        }
+      }
+    });
+  }
+
   List<dynamic> getFilteredData(List<dynamic> data, bool isCrypto) {
     if (_searchQuery.isEmpty) {
       List<dynamic> favorites = [];
@@ -249,7 +289,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     );
   }
 
-  Widget _buildMarketCard(Map<String, dynamic> item, bool isCrypto) {
+  Widget _buildMarketCardContent(Map<String, dynamic> item, bool isCrypto) {
     final String id = isCrypto ? item['id'] : (item['id'] ?? item['symbol']);
     final String name = item['name'] ?? '';
     final String symbol = isCrypto ? (item['symbol'] ?? '').toUpperCase() : item['symbol'];
@@ -258,6 +298,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     final bool isExpanded = _expandedCards[id] ?? false;
     final bool isFavorite = _favorites[id] ?? false;
     final Widget iconWidget = getAssetIcon(item, isCrypto);
+    final bool isSelected = _selectedItems.contains(id);
 
     return Card(
       color: _cardColor,
@@ -265,9 +306,14 @@ class _LiveMarketPageState extends State<LiveMarketPage>
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
+        side: BorderSide(
+          color: isSelected ? Colors.blueAccent : Colors.transparent,
+          width: 2.0,
+        ),
       ),
       child: InkWell(
         onTap: () => _navigateToChartPage(item, isCrypto),
+        onLongPress: () => _toggleSelection(item),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -332,7 +378,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    formatPrice(price),
+                    formatPrice(price, isCrypto),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -375,13 +421,15 @@ class _LiveMarketPageState extends State<LiveMarketPage>
                   children: [
                     _buildDetailItem('24h Volume',
                         isCrypto
-                            ? '\$${NumberFormat.compact().format(item['total_volume'])}'
-                            : '\$${NumberFormat.compact().format(item['volume'])}'
+                            ? '${NumberFormat.compact().format(item['total_volume'])}'
+                            : '${NumberFormat.compact().format(item['volume'])}',
+                        isCrypto
                     ),
                     _buildDetailItem('Market Cap',
                         isCrypto
-                            ? '\$${NumberFormat.compact().format(item['market_cap'])}'
-                            : '-'
+                            ? '${NumberFormat.compact().format(item['market_cap'])}'
+                            : '-',
+                        isCrypto
                     ),
                   ],
                 ),
@@ -393,7 +441,16 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     );
   }
 
-  Widget _buildDetailItem(String title, String value) {
+  Widget _buildDetailItem(String title, String value, bool isCrypto) {
+    String formattedValue = value;
+    if (title == '24h Volume' || title == 'Market Cap') {
+      if (isCrypto) {
+        formattedValue = '\$$value'; // For crypto, show in USD
+      } else {
+        formattedValue = '₺$value'; // For Turkish stocks, show in TL
+      }
+    }
+
     return Column(
       children: [
         Text(
@@ -405,7 +462,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
         ),
         const SizedBox(height: 4),
         Text(
-          value,
+          formattedValue,
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -438,7 +495,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
         },
         decoration: const InputDecoration(
           border: InputBorder.none,
-          hintText: 'Search...',
+          hintText: 'Arama...',
           hintStyle: TextStyle(color: Colors.white70),
           prefixIcon: Icon(Icons.search, color: Colors.white70),
           contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -454,7 +511,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     if (sortedData.isEmpty) {
       return const Center(
         child: Text(
-          'No market data found for your search.',
+          'Arama kriterlerinize uygun piyasa verisi bulunamadı.',
           style: TextStyle(color: Colors.white54, fontSize: 16),
           textAlign: TextAlign.center,
         ),
@@ -463,7 +520,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     return ListView.builder(
       itemCount: sortedData.length,
       itemBuilder: (context, index) {
-        return _buildMarketCard(sortedData[index] as Map<String, dynamic>, isCrypto);
+        return _buildMarketCardContent(sortedData[index] as Map<String, dynamic>, isCrypto);
       },
     );
   }
@@ -472,8 +529,6 @@ class _LiveMarketPageState extends State<LiveMarketPage>
   void dispose() {
     _controller.dispose();
     _tabController?.dispose();
-    // Removed the timer cancellation
-    // _timer?.cancel();
     super.dispose();
   }
 
@@ -511,11 +566,11 @@ class _LiveMarketPageState extends State<LiveMarketPage>
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                  child: const Text('Try Again'),
+                  child: const Text('Tekrar Dene'),
                 ),
               ] else
                 const Text(
-                  'Loading market data...',
+                  'Piyasa verileri yükleniyor...',
                   style: TextStyle(color: Colors.white),
                 ),
             ],
@@ -531,16 +586,14 @@ class _LiveMarketPageState extends State<LiveMarketPage>
           children: [
             Icon(Icons.trending_up, color: _accentColor),
             const SizedBox(width: 8),
-            // Buradaki Text widget'ını Expanded ile sarıyoruz
             Expanded(
               child: Text(
-                'Live Market Tracker',
+                'Canlı Piyasa Takibi',
                 style: TextStyle(
                   fontSize: 22.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
-                // Taşmayı önlemek için overflow ekliyoruz
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -559,7 +612,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
             onPressed: () {
               fetchMarketData();
             },
-            tooltip: 'Refresh Data',
+            tooltip: 'Verileri Yenile',
           ),
         ],
         bottom: PreferredSize(
@@ -574,9 +627,9 @@ class _LiveMarketPageState extends State<LiveMarketPage>
                 labelColor: Colors.white,
                 unselectedLabelColor: Colors.white70,
                 tabs: const [
-                  Tab(text: 'All'),
-                  Tab(text: 'Crypto'),
-                  Tab(text: 'Stocks'),
+                  Tab(text: 'Hepsi'),
+                  Tab(text: 'Kripto'),
+                  Tab(text: 'Hisse'),
                 ],
               ),
             ],
@@ -594,43 +647,80 @@ class _LiveMarketPageState extends State<LiveMarketPage>
             end: Alignment.bottomCenter,
           ),
         ),
-        child: TabBarView(
-          controller: _tabController!,
+        child: Stack(
           children: [
-            ListView(
+            TabBarView(
+              controller: _tabController!,
               children: [
-                if (displayedCryptoData.isNotEmpty) ...[
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      'Cryptocurrencies',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                ListView(
+                  children: [
+                    if (displayedCryptoData.isNotEmpty) ...[
+                      const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'Kripto Paralar',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  ...displayedCryptoData.map((item) => _buildMarketCard(item as Map<String, dynamic>, true)).toList(),
-                ],
-                if (displayedStockData.isNotEmpty) ...[
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Text(
-                      'Stocks',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                      ...displayedCryptoData.map((item) => _buildMarketCardContent(item as Map<String, dynamic>, true)).toList(),
+                    ],
+                    if (displayedStockData.isNotEmpty) ...[
+                      const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'Hisse Senetleri',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  ...displayedStockData.map((item) => _buildMarketCard(item as Map<String, dynamic>, false)).toList(),
-                ],
+                      ...displayedStockData.map((item) => _buildMarketCardContent(item as Map<String, dynamic>, false)).toList(),
+                    ],
+                  ],
+                ),
+                _buildContent(displayedCryptoData, true),
+                _buildContent(displayedStockData, false),
               ],
             ),
-            _buildContent(displayedCryptoData, true),
-            _buildContent(displayedStockData, false),
+            if (_selectedItems.isNotEmpty)
+              Positioned(
+                bottom: 20,
+                right: 20,
+                left: 20,
+                child: FloatingActionButton.extended(
+                  heroTag: 'compare_button',
+                  onPressed: () {
+                    if (_selectedItems.length >= 2) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ComparePage(
+                            stocksToCompare: _selectedItemData.values.toList().cast<Map<String, dynamic>>(),
+                          ),
+                        ),
+                      ).then((_) {
+                        setState(() {
+                          _selectedItems.clear();
+                          _selectedItemData.clear();
+                        });
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Karşılaştırmak için en az 2 hisse seçin.')),
+                      );
+                    }
+                  },
+                  backgroundColor: _accentColor,
+                  label: Text('Karşılaştır (${_selectedItems.length}/2)'),
+                  icon: const Icon(Icons.compare_arrows, color: Colors.black),
+                ),
+              ),
           ],
         ),
       ),
@@ -638,7 +728,6 @@ class _LiveMarketPageState extends State<LiveMarketPage>
   }
 }
 
-// New ChartPage widget
 class ChartPage extends StatefulWidget {
   final Map<String, dynamic> item;
   final bool isCrypto;
@@ -670,10 +759,9 @@ class _ChartPageState extends State<ChartPage> with SingleTickerProviderStateMix
     });
 
     try {
-      // Simulate chart data
       _chartData.clear();
       for (var i = 0; i < _timeFrames.length; i++) {
-        _chartData.add(_generateFakeData(i));
+        _chartData.add(_generateFakeCandleData(i));
       }
 
       setState(() {
@@ -682,25 +770,35 @@ class _ChartPageState extends State<ChartPage> with SingleTickerProviderStateMix
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Failed to load chart data.';
+        _errorMessage = 'Grafik verileri yüklenirken bir hata oluştu.';
       });
     }
   }
 
-  List<ChartData> _generateFakeData(int timeFrameIndex) {
+  List<ChartData> _generateFakeCandleData(int timeFrameIndex) {
     final List<ChartData> data = [];
     const int points = 50;
     double basePrice = widget.item['current_price'] ?? widget.item['price'] ?? 0;
+    Random random = Random();
 
-    double fluctuation = 0.0;
-    if (timeFrameIndex == 0) fluctuation = 0.005;
-    if (timeFrameIndex == 1) fluctuation = 0.01;
-    if (timeFrameIndex == 2) fluctuation = 0.02;
-    if (timeFrameIndex == 3) fluctuation = 0.03;
+    double fluctuationFactor = 0.0;
+    if (timeFrameIndex == 0) fluctuationFactor = 0.005; // 15m
+    if (timeFrameIndex == 1) fluctuationFactor = 0.01; // 1h
+    if (timeFrameIndex == 2) fluctuationFactor = 0.02; // 4h
+    if (timeFrameIndex == 3) fluctuationFactor = 0.03; // 1d
+
+    double lastClose = basePrice;
+    DateTime currentTime = DateTime.now();
 
     for (int i = 0; i < points; i++) {
-      double y = basePrice + (i * fluctuation * (i % 2 == 0 ? 1 : -1));
-      data.add(ChartData(i.toDouble(), y));
+      double open = lastClose;
+      double change = (random.nextDouble() - 0.5) * fluctuationFactor;
+      double close = open * (1 + change);
+      double high = max(open, close) + open * random.nextDouble() * fluctuationFactor * 0.5;
+      double low = min(open, close) - open * random.nextDouble() * fluctuationFactor * 0.5;
+
+      lastClose = close;
+      data.add(ChartData(currentTime.subtract(Duration(minutes: (points - i) * 15)), open, high, low, close));
     }
     return data;
   }
@@ -739,10 +837,9 @@ class _ChartPageState extends State<ChartPage> with SingleTickerProviderStateMix
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              NumberFormat.currency(
-                symbol: '\$',
-                decimalDigits: (widget.item['current_price'] ?? widget.item['price']) > 1 ? 2 : 6,
-              ).format(widget.item['current_price'] ?? widget.item['price']),
+              widget.isCrypto
+                  ? '${NumberFormat("#,##0.00").format(widget.item['current_price'] ?? widget.item['price'])} USDT'
+                  : '${NumberFormat.currency(symbol: '₺', decimalDigits: 2).format(widget.item['current_price'] ?? widget.item['price'])}',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 32,
@@ -782,7 +879,7 @@ class _ChartPageState extends State<ChartPage> with SingleTickerProviderStateMix
                 int index = _timeFrames.indexOf(timeFrame);
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: _buildLineChart(_chartData[index]),
+                  child: _buildCandleChart(_chartData[index]),
                 );
               }).toList(),
             ),
@@ -792,29 +889,229 @@ class _ChartPageState extends State<ChartPage> with SingleTickerProviderStateMix
     );
   }
 
-  Widget _buildLineChart(List<ChartData> data) {
+  Widget _buildCandleChart(List<ChartData> data) {
     return SfCartesianChart(
       plotAreaBorderWidth: 0,
-      primaryXAxis: const NumericAxis(
-        isVisible: false,
+      primaryXAxis: DateTimeAxis(
+        majorGridLines: const MajorGridLines(width: 0),
+        dateFormat: DateFormat.Hm(),
       ),
-      primaryYAxis: const NumericAxis(
-        isVisible: false,
+      primaryYAxis: NumericAxis(
+        numberFormat: NumberFormat.simpleCurrency(decimalDigits: 2, name: widget.isCrypto ? 'USD' : '₺'),
+        majorGridLines: const MajorGridLines(width: 0),
       ),
-      series: <LineSeries<ChartData, double>>[
-        LineSeries<ChartData, double>(
+      series: <CandleSeries>[
+        CandleSeries<ChartData, DateTime>(
           dataSource: data,
-          xValueMapper: (ChartData sales, _) => sales.x,
-          yValueMapper: (ChartData sales, _) => sales.y,
-          color: const Color(0xFF03DAC6),
-          enableTooltip: true,
-          markerSettings: const MarkerSettings(
-            isVisible: false,
-          ),
-          width: 2,
+          xValueMapper: (ChartData data, _) => data.time,
+          openValueMapper: (ChartData data, _) => data.open,
+          highValueMapper: (ChartData data, _) => data.high,
+          lowValueMapper: (ChartData data, _) => data.low,
+          closeValueMapper: (ChartData data, _) => data.close,
+          bullColor: const Color(0xFF00E676),
+          bearColor: const Color(0xFFFF5252),
         ),
       ],
       tooltipBehavior: TooltipBehavior(enable: true),
+    );
+  }
+}
+
+// ComparePage for comparing two stocks
+class ComparePage extends StatefulWidget {
+  final List<Map<String, dynamic>> stocksToCompare;
+
+  const ComparePage({super.key, required this.stocksToCompare});
+
+  @override
+  _ComparePageState createState() => _ComparePageState();
+}
+
+class _ComparePageState extends State<ComparePage> {
+  final List<List<ChartData>> _chartData = [];
+  bool _isLoading = true;
+  String _errorMessage = '';
+
+  final Color _positiveColor = const Color(0xFF00E676);
+  final Color _negativeColor = const Color(0xFFFF5252);
+  final Color _accentColor = const Color(0xFF03DAC6);
+
+  @override
+  void initState() {
+    super.initState();
+    fetchComparisonData();
+  }
+
+  Future<void> fetchComparisonData() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      _chartData.clear();
+      for (var item in widget.stocksToCompare) {
+        _chartData.add(_generateFakeCandleData(item));
+      }
+
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Karşılaştırma verileri yüklenirken bir hata oluştu.';
+      });
+    }
+  }
+
+  List<ChartData> _generateFakeCandleData(Map<String, dynamic> item) {
+    final List<ChartData> data = [];
+    const int points = 50;
+    double basePrice = item['current_price'] ?? item['price'] ?? 0;
+    Random random = Random();
+
+    double fluctuationFactor = 0.0;
+    if (item['isCrypto'] ?? false) {
+      fluctuationFactor = 0.01;
+    } else {
+      fluctuationFactor = 0.02;
+    }
+
+    double lastClose = basePrice;
+    DateTime currentTime = DateTime.now();
+
+    for (int i = 0; i < points; i++) {
+      double open = lastClose;
+      double change = (random.nextDouble() - 0.5) * fluctuationFactor;
+      double close = open * (1 + change);
+      double high = max(open, close) + open * random.nextDouble() * fluctuationFactor * 0.5;
+      double low = min(open, close) - open * random.nextDouble() * fluctuationFactor * 0.5;
+
+      lastClose = close;
+      data.add(ChartData(currentTime.subtract(Duration(minutes: (points - i) * 15)), open, high, low, close));
+    }
+    return data;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0A0E21),
+      appBar: AppBar(
+        title: const Text(
+          'Hisse Karşılaştırması',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: const Color(0xFF0A0E21),
+        elevation: 0,
+        centerTitle: true,
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage.isNotEmpty
+          ? Center(
+        child: Text(_errorMessage, style: const TextStyle(color: Colors.white)),
+      )
+          : Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: widget.stocksToCompare.map((item) {
+                final isCrypto = item.containsKey('isCrypto') ? item['isCrypto'] : false;
+                return Expanded(
+                  child: Card(
+                    color: const Color(0xFF1D1F33),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    margin: const EdgeInsets.all(8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            item['symbol'] ?? item['id'],
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            isCrypto
+                                ? '${NumberFormat("#,##0.00").format(item['current_price'])} USDT'
+                                : '${NumberFormat.currency(symbol: '₺', decimalDigits: 2).format(item['price'])}',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${(item['price_change_percentage_24h'] ?? item['change']) >= 0 ? '+' : ''}${
+                                (item['price_change_percentage_24h'] ?? item['change'])?.toStringAsFixed(2)
+                            }%',
+                            style: TextStyle(
+                              color: (item['price_change_percentage_24h'] ?? item['change']) >= 0
+                                  ? _positiveColor
+                                  : _negativeColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: SfCartesianChart(
+                plotAreaBorderWidth: 0,
+                primaryXAxis: DateTimeAxis(
+                  majorGridLines: const MajorGridLines(width: 0),
+                  dateFormat: DateFormat.Hm(),
+                ),
+                primaryYAxis: const NumericAxis(
+                  majorGridLines: MajorGridLines(width: 0),
+                ),
+                series: _chartData.asMap().entries.map((entry) {
+                  final int index = entry.key;
+                  final List<ChartData> data = entry.value;
+                  final String name = widget.stocksToCompare[index]['symbol'] ?? widget.stocksToCompare[index]['id'];
+
+                  return CandleSeries<ChartData, DateTime>(
+                    name: name,
+                    dataSource: data,
+                    xValueMapper: (ChartData data, _) => data.time,
+                    openValueMapper: (ChartData data, _) => data.open,
+                    highValueMapper: (ChartData data, _) => data.high,
+                    lowValueMapper: (ChartData data, _) => data.low,
+                    closeValueMapper: (ChartData data, _) => data.close,
+                    bullColor: index == 0 ? Colors.blueAccent : Colors.orangeAccent,
+                    bearColor: index == 0 ? Colors.blueAccent.withOpacity(0.5) : Colors.orangeAccent.withOpacity(0.5),
+                  );
+                }).toList(),
+                tooltipBehavior: TooltipBehavior(enable: true),
+                legend: const Legend(
+                  isVisible: true,
+                  position: LegendPosition.bottom,
+                  textStyle: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

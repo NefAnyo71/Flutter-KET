@@ -48,6 +48,7 @@ class _DersNotlari1State extends State<DersNotlari1> {
       'İktisat': ['Tüm Dersler', 'Mikro İktisat', 'Makro İktisat', 'Ekonometri', 'İstatistik', 'Uluslararası Ticaret', 'Parasal İktisat', 'Oyun Teorisi', 'Maliye Politikası', 'Gelişme İktisadı'],
       'İşletme': ['Tüm Dersler', 'İşletme Yönetimi', 'Pazarlama İlkeleri', 'Muhasebe', 'Finansal Yönetim', 'Stratejik Yönetim', 'İnsan Kaynakları Yönetimi', 'Örgütsel Davranış', 'Üretim Yönetimi', 'İş Hukuku'],
       'Siyaset Bilimi ve Kamu Yönetimi': ['Tüm Dersler', 'Siyaset Bilimine Giriş', 'Anayasa Hukuku', 'Yerel Yönetimler', 'Türk Siyasal Hayatı', 'Siyasi Düşünceler Tarihi', 'Karşılaştrmalı Siyaset', 'İdari Yargı', 'Kamu Yönetimi'],
+      'Ekonometri': ['Tüm Dersler', 'İstatistik','Maliye Politikası', 'Gelişme İktisadı', 'Regresyon',''],
       'Uluslararası İlişkiler': ['Tüm Dersler', 'Uluslararası İlişkiler Teorileri', 'Diplomasi Tarihi', 'Küresel Ekonomi', 'Türk Dış Politikası', 'Uluslararası Hukuk', 'Güvenlik Politikaları', 'Savaş ve Barış Çalışmaları'],
     },
     'Mühendislik Fakültesi': {

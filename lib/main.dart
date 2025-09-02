@@ -21,6 +21,7 @@ import 'DersNotlarımPage.dart';
 import 'ders_notlari1.dart';
 import 'yaklasan_etkinlikler.dart';
 import 'notification_service.dart';
+import 'account_settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:in_app_update/in_app_update.dart';
 
@@ -221,7 +222,7 @@ class SplashScreenApp extends StatelessWidget {
               const SizedBox(height: 20),
               const CircularProgressIndicator(color: Colors.white),
               const SizedBox(height: 20),
-              const Text('KET Yükleniyor...',
+              const Text('Ekonomi Topluluğu Güncelleniyor...',
                   style: TextStyle(color: Colors.white, fontSize: 18)),
             ],
           ),
@@ -707,11 +708,22 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
+    _loadUserData().then((_) {
+      // Veriler yüklendikten sonra, widget ağaca bağlıysa ve isim boş değilse
+      // hoş geldin mesajını göster.
+      if (mounted && _userName.isNotEmpty) {
+        // build metodu tamamlandıktan sonra dialog göstermek için callback kullanıyoruz.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showWelcomeDialog(context);
+        });
+      }
+    });
   }
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
+    // setState çağırmadan önce widget'ın hala ağaçta olduğundan emin ol
+    if (!mounted) return;
     setState(() {
       _userName = prefs.getString('name') ?? '';
       _userSurname = prefs.getString('surname') ?? '';
@@ -719,465 +731,127 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<void> _showChangePasswordDialog(BuildContext context) async {
-    final newPasswordController = TextEditingController();
-    final confirmPasswordController = TextEditingController();
-
-    await showDialog(
+  void _showWelcomeDialog(BuildContext context) {
+    // Daha akıcı bir animasyon için showGeneralDialog kullanıyoruz.
+    showGeneralDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Şifre Değiştir'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: newPasswordController,
-                decoration: const InputDecoration(
-                  labelText: 'Yeni Şifre',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-                validator: (value) {
-                  if (value!.isEmpty || value.length < 4)
-                    return 'En az 4 karakter girin';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: confirmPasswordController,
-                decoration: const InputDecoration(
-                  labelText: 'Yeni Şifre Tekrar',
-                  border: OutlineInputBorder(),
-                ),
-                obscureText: true,
-                validator: (value) {
-                  if (value != newPasswordController.text)
-                    return 'Şifreler eşleşmiyor';
-                  return null;
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('İptal'),
+      barrierDismissible: false, // Kullanıcı dışarı tıklayarak kapatamaz
+      // Erişilebilirlik etiketi. Flutter'ın eski sürümleriyle uyumluluk için
+      // sabit bir dize kullanmak daha güvenlidir.
+      barrierLabel: 'Arka Plan',
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: const Duration(milliseconds: 500), // Animasyon süresi
+      pageBuilder: (context, animation, secondaryAnimation) {
+        // Bu kısım dialog'un içeriğini oluşturur.
+        return Center(
+          child: Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                if (newPasswordController.text.length >= 4 &&
-                    newPasswordController.text ==
-                        confirmPasswordController.text) {
-                  // Şifreyi güncelle
-                  await _updateUserPassword(
-                      _userEmail, newPasswordController.text);
-
-                  // Yerel storage'ı da güncelle
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.setString('password', newPasswordController.text);
-
-                  Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Şifre başarıyla güncellendi')),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Lütfen geçerli bir şifre girin')),
-                  );
-                }
-              },
-              child: const Text('Kaydet'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _showAccountMenu(BuildContext context) async {
-    final result = await showMenu<String>(
-      context: context,
-      position: const RelativeRect.fromLTRB(100, 100, 0, 0),
-      items: [
-        const PopupMenuItem<String>(
-          value: 'profile',
-          child: Text('Profil Bilgileri'),
-        ),
-        const PopupMenuItem<String>(
-          value: 'password',
-          child: Text('Şifre Değiştir'),
-        ),
-        const PopupMenuItem<String>(
-          value: 'switch',
-          child: Text('Hesap Değiştir'),
-        ),
-        const PopupMenuItem<String>(
-          value: 'logout',
-          child: Text('Çıkış Yap'),
-        ),
-        const PopupMenuItem<String>(
-          value: 'delete_account',
-          child: Text('Hesabı Sil'),
-        ),
-        const PopupMenuItem<String>(
-          value: 'deactivate_account',
-          child: Text('Hesabı Devre Dışı Bırak'),
-        ),
-        const PopupMenuItem<String>(
-          value: 'notifications',
-          child: Text('Bildirim Ayarları'),
-        ),
-      ],
-    );
-
-    if (result == 'logout') {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('email');
-      await prefs.remove('password');
-      await prefs.remove('name');
-      await prefs.remove('surname');
-      await prefs.remove('hasSeenUyeKayit');
-
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => const SimpleLoginPage(),
-      ));
-    } else if (result == 'switch') {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('email');
-      await prefs.remove('password');
-      await prefs.remove('name');
-      await prefs.remove('surname');
-      await prefs.remove('hasSeenUyeKayit');
-
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => const SimpleLoginPage(),
-      ));
-    } else if (result == 'profile') {
-      // Profil bilgilerini göster
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Profil Bilgileri'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Ad: $_userName'),
-                Text('Soyad: $_userSurname'),
-                Text('E-posta: $_userEmail'),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Tamam'),
-              ),
-            ],
-          );
-        },
-      );
-    } else if (result == 'password') {
-      // Şifre değiştir dialogunu göster
-      await _showChangePasswordDialog(context);
-    } else if (result == 'delete_account') {
-      _showDeleteAccountDialog(context);
-    } else if (result == 'deactivate_account') {
-      _showDeactivateAccountDialog(context);
-    } else if (result == 'notifications') {
-      _showNotificationSettings(context);
-    }
-  }
-
-  void _showDeleteAccountDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Hesabı Sil'),
-          content: const Text(
-              'Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz ve tüm verileriniz kalıcı olarak silinecektir.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('İptal'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                _deleteAccount();
-              },
-              child: const Text('Hesabı Sil', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showDeactivateAccountDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Hesabı Devre Dışı Bırak'),
-          content: const Text(
-              'Hesabınızı devre dışı bırakmak istediğinize emin misiniz? Hesabınız geçici olarak kapatılacak ve tekrar giriş yapana kadar kullanılamayacaktır.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('İptal'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                _deactivateAccount();
-              },
-              child: const Text('Devre Dışı Bırak', style: TextStyle(color: Colors.orange)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _deleteAccount() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final userEmail = prefs.getString('email');
-
-      if (userEmail != null) {
-        // Firestore'dan kullanıcıyı sil
-        await _firestore.collection('üyelercollection').doc(userEmail).delete();
-
-        // Yerel verileri temizle
-        await prefs.clear();
-
-        // Login sayfasına yönlendir
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const SimpleLoginPage()),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Hesap silinirken bir hata oluştu')),
-        );
-      }
-    }
-  }
-
-  Future<void> _deactivateAccount() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final userEmail = prefs.getString('email');
-
-      if (userEmail != null) {
-        // Hesabı devre dışı bırak (hesapEngellendi = 1 yaparak)
-        await _firestore.collection('üyelercollection').doc(userEmail).update({
-          'hesapEngellendi': 1,
-          'deactivatedAt': FieldValue.serverTimestamp(),
-        });
-
-        // Oturumu kapat
-        await prefs.clear();
-
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const SimpleLoginPage()),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Hesap devre dışı bırakılırken bir hata oluştu')),
-        );
-      }
-    }
-  }
-
-  void _showNotificationSettings(BuildContext context) {
-    TimeOfDay startTime = const TimeOfDay(hour: 22, minute: 0);
-    TimeOfDay endTime = const TimeOfDay(hour: 8, minute: 0);
-    bool isEnabled = false;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Sessiz Saatler'),
-              content: Column(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SwitchListTile(
-                    title: const Text('Sessiz Saatleri Aktif Et'),
-                    value: isEnabled,
-                    onChanged: (value) {
-                      setState(() => isEnabled = value!);
-                    },
-                  ),
-                  if (isEnabled) ...[
-                    const SizedBox(height: 10),
-                    ListTile(
-                      title: Text('Başlangıç: ${startTime.format(context)}'),
-                      trailing: const Icon(Icons.access_time),
-                      onTap: () async {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: startTime,
-                        );
-                        if (time != null) {
-                          setState(() => startTime = time);
-                        }
-                      },
-                    ),
-                    ListTile(
-                      title: Text('Bitiş: ${endTime.format(context)}'),
-                      trailing: const Icon(Icons.access_time),
-                      onTap: () async {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: endTime,
-                        );
-                        if (time != null) {
-                          setState(() => endTime = time);
-                        }
-                      },
-                    ),
-                  ],
+                  const Icon(Icons.waving_hand_rounded, size: 50, color: Colors.amber),
+                  const SizedBox(height: 16),
+                  const Text('Hoş Geldin', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text('$_userName $_userSurname', style: TextStyle(fontSize: 18, color: Colors.grey.shade700), textAlign: TextAlign.center),
                 ],
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('İptal'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.setBool('silent_hours_enabled', isEnabled);
-                    await prefs.setString('silent_hours_start', '${startTime.hour}:${startTime.minute}');
-                    await prefs.setString('silent_hours_end', '${endTime.hour}:${endTime.minute}');
-                    if (mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Ayarlar kaydedildi')),
-                      );
-                    }
-                  },
-                  child: const Text('Kaydet'),
-                ),
-              ],
-            );
-          },
+            ),
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        // Bu kısım giriş ve çıkış animasyonunu yönetir.
+        return ScaleTransition(
+          scale: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutBack, // "Fırlama" efekti için güzel bir curve
+          ),
+          child: FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
         );
       },
     );
+
+    // 2.5 saniye sonra dialog'u otomatik olarak kapat
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      // Dialog'u kapatmadan önce hala ekranda olup olmadığını kontrol et
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
-        toolbarHeight: 105, // AppBar yüksekliğini biraz küçülttüm
-        title: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        backgroundColor: Colors.deepPurple.shade700,
+        elevation: 4.0,
+        toolbarHeight: 80,
+        title: Row(
           children: [
-            // Üst kısım: Kullanıcı bilgileri ve çark - YAN YANA
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Sol tarafta kullanıcı adı soyadı YAN YANA
-                if (_userName.isNotEmpty || _userSurname.isNotEmpty)
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Text(
-                          _userName,
-                          style: const TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          _userSurname,
-                          style: const TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+            Image.asset('assets/images/ekoslogo.png', height: 40),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '$_userName $_userSurname',
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const Text(
+                    'Ekonomi Topluluğu',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.white70,
                     ),
                   ),
-                // Sağ tarafta çark ikonu
-                IconButton(
-                  icon:
-                  const Icon(Icons.settings, color: Colors.white, size: 30),
-                  onPressed: () => _showAccountMenu(context),
-                  tooltip: 'Hesap Ayarları',
-                ),
-              ],
-            ),
-            const SizedBox(height: 5),
-            // Alt kısım: Logolar ve üniversite bilgisi - DAHA BÜYÜK
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Sol logo - DAHA BÜYÜK
-                Image.asset(
-                  'assets/images/kkulogo.png',
-                  height: 40, // Boyutu büyüttüm
-                ),
-                const SizedBox(width: 12),
-                // Orta metin - DAHA BÜYÜK
-                Column(
-                  children: [
-                    Text(
-                      'Kırıkkale Üniversitesi',
-                      style: TextStyle(
-                        fontSize: 20.0, // Font büyüklüğünü artırdım
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      'Ekonomi Topluluğu',
-                      style: TextStyle(
-                        fontSize: 20.0, // Font büyüklüğünü artırdım
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 12),
-                // Sağ logo - DAHA BÜYÜK
-                Image.asset(
-                  'assets/images/ekoslogo.png',
-                  height: 40, // Boyutu büyüttüm
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.white, size: 28),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AccountSettingsPage(
+                    userName: _userName,
+                    userSurname: _userSurname,
+                    userEmail: _userEmail,
+                  ),
+                ),
+              );
+            },
+            tooltip: 'Hesap Ayarları',
+          ),
+        ],
       ),
       body: Container(
-        color: Colors.white, // Beyaz arka plan
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.deepPurple.shade50, Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Column(
           children: [
             Expanded(
@@ -1267,7 +941,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
   Widget _buildGridButton(
       BuildContext context, String title, IconData icon, Widget page) {
     return GestureDetector(
@@ -1276,31 +949,36 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.grey.shade100],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(20.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              blurRadius: 8.0,
-              offset: const Offset(0, 6),
+              color: Colors.deepPurple.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 10,
+              offset: const Offset(0, 5),
             ),
           ],
-          border: Border.all(color: Colors.deepPurple, width: 1.0),
+          border: Border.all(color: Colors.deepPurple.shade100, width: 1.0),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40.0, color: Colors.deepPurple),
+            Icon(icon, size: 45.0, color: Colors.deepPurple.shade600),
             const SizedBox(height: 8.0),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
                 title,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 14.0,
+                  fontSize: 15.0,
                   fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
+                  color: Colors.deepPurple.shade900,
                 ),
               ),
             ),

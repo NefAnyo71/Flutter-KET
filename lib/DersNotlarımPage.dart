@@ -4,14 +4,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http; // Sadece örnek olması için http'yi ekledim, bu projede kullanılmıyor.
+// Sadece örnek olması için http'yi ekledim, bu projede kullanılmıyor.
 
 // Renk paleti
 class AppColors {

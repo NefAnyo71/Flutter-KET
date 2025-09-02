@@ -274,20 +274,10 @@ class _BasvuruSorgulamaState extends State<BasvuruSorgulama> {
                       final docId = application.id;
                       final odemeDurumu = data['odemeDurumu'] ?? 'odenmedi';
 
-                      // Kullanıcının formda girdiği tarih
-                      Timestamp? userTimestamp = data['tarih'];
-                      String userFormattedDate = 'Belirtilmemiş';
-                      if (userTimestamp != null) {
-                        DateTime date = userTimestamp.toDate().toLocal();
-                        userFormattedDate =
-                            DateFormat("MMMM d, y 'at' h:mm:ss a")
-                                    .format(date) +
-                                ' UTC+3';
-                      }
-
                       // Firestore'a kaydedilme tarihi (timestamp)
-                      Timestamp? firestoreTimestamp =
-                          data['timestamp'] ?? application['timestamp'];
+                      // `application['timestamp']` ifadesi bir çalışma zamanı hatasına neden olur.
+                      // Veriye her zaman `data` map'i üzerinden erişilmelidir.
+                      Timestamp? firestoreTimestamp = data['timestamp'];
                       String firestoreFormattedDate = 'Belirtilmemiş';
                       if (firestoreTimestamp != null) {
                         DateTime date = firestoreTimestamp.toDate().toLocal();
