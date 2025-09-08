@@ -10,7 +10,7 @@
 
 KET(kku ekonomi toplululuğu), Kırıkkale Üniversitesi Ekonomi Topluluğu için Flutter ile geliştirilmiş modern bir mobil uygulamadır. Uygulama, topluluk etkinlikleri, güncel ekonomi haberleri, ders notları paylaşımı ve sosyal medya entegrasyonu gibi kapsamlı özellikler sunar.
 
-**Sürüm**: 6.6.6
+**Sürüm**: 6.8.9
 **Geliştirici**: Arif Kerem  
 **Platform**: Android (iOS desteği mevcut)  
 **Dil**: Dart/Flutter  
@@ -551,7 +551,7 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 
 ## 📝 Sürüm Geçmişi
 
-### v6.8.8 (Güncel)
+### v6.8.9 (Güncel)
 - Gelişmiş ders notu paylaşım sistemi
 - Yönetici paneli iyileştirmeleri
 - Bildirim sistemi güncellemeleri
@@ -587,5 +587,5 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
   <img src="https://img.shields.io/badge/Flutter-3.6.1+-blue?logo=flutter" alt="Flutter">
   <img src="https://img.shields.io/badge/Dart-3.6.1+-blue?logo=dart" alt="Dart">
   <img src="https://img.shields.io/badge/Firebase-Latest-orange?logo=firebase" alt="Firebase">
-  <img src="https://img.shields.io/badge/Version-6.0.0-green" alt="Version">
+  <img src="https://img.shields.io/badge/Version-6.8.9-green" alt="Version">
 </div>
