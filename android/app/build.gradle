@@ -34,9 +34,9 @@ android {
         applicationId = "com.arifozdemir.ekos"
         minSdk = 34
         targetSdk = 36
-        versionCode = 49
-        versionName = "6.5.5"
-        // D:\EKOS\ket\build\app\outputs\bundle
+        versionCode = 61
+        versionName = "6.8.8"
+        // D:\EKOS\ket\build\app\outputs\bundle\release
     }
 
     signingConfigs {
