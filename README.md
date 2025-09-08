@@ -558,7 +558,7 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 - Performans optimizasyonları
 - Yapayzeka Ket eklendi
 
-### v5.x.x
+### v1.x.x
 - Temel özellikler
 - Firebase entegrasyonu
 - Kullanıcı arayüzü geliştirmeleri
