@@ -119,6 +119,7 @@ class NotificationService {
                 'Yaklaşan Etkinlik! 🗓️',
                 '$eventTitle etkinliğine 7 gün kaldı. Hazırlıklarınızı yapın!',
               );
+              await _incrementNotificationBadge();
               await prefs.setBool(notificationKey, true);
               anyNotificationSent = true;
             } else {
@@ -138,6 +139,7 @@ class NotificationService {
                 'Etkinlik Yaklaşıyor! ⏰',
                 '$eventTitle etkinliğine sadece 1 gün kaldı. Kaçırmayın!',
               );
+              await _incrementNotificationBadge();
               await prefs.setBool(notificationKey, true);
               anyNotificationSent = true;
             } else {
@@ -157,6 +159,7 @@ class NotificationService {
                 'Etkinlik Başlamak Üzere! 🔥',
                 '$eventTitle etkinliği 1 saat içinde başlayacak.',
               );
+              await _incrementNotificationBadge();
               await prefs.setBool(notificationKey, true);
               anyNotificationSent = true;
             } else {
@@ -207,11 +210,27 @@ class NotificationService {
         title,
         body,
         platformChannelSpecifics,
+        payload: 'event_notification', // Etkinlik bildirimi olduğunu belirt
       );
+
+
 
       print("📨 Bildirim gönderildi: $title - $body");
     } catch (e) {
       print("❌ Bildirim gönderme hatası: $e");
+    }
+  }
+
+  // Bildirim sayacını artırma fonksiyonu
+  static Future<void> _incrementNotificationBadge() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final currentCount = prefs.getInt('event_notification_count') ?? 0;
+      final newCount = currentCount + 1;
+      await prefs.setInt('event_notification_count', newCount);
+      print('🔔 Bildirim sayacı artırıldı: $currentCount → $newCount');
+    } catch (e) {
+      print('❌ Bildirim sayacı artırma hatası: $e');
     }
   }
 

@@ -5,6 +5,8 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'services/badge_service.dart';
+import 'models/badge_model.dart';
 
 class DersNotlari1 extends StatefulWidget { 
   const DersNotlari1({Key? key}) : super(key: key);
@@ -184,6 +186,16 @@ class _DersNotlari1State extends State<DersNotlari1> {
           type: FieldValue.increment(1),
         });
         await prefs.setString(reactionKey, isLike ? 'like' : 'dislike');
+      }
+      
+      // Rozet kontrolü yap
+      final docData = await _firestore.collection('ders_notlari').doc(docId).get();
+      if (docData.exists) {
+        final data = docData.data() as Map<String, dynamic>;
+        final paylasenEmail = data['paylasan_kullanici_email'] as String?;
+        if (paylasenEmail != null && paylasenEmail.isNotEmpty) {
+          await BadgeService.checkAndAwardBadges(paylasenEmail);
+        }
       }
       
       // Refresh the UI
@@ -605,6 +617,11 @@ class _DersNotlari1State extends State<DersNotlari1> {
                           'paylasan_kullanici_soyadi': _userSurname,
                           'paylasan_kullanici_email': _userEmail,
                         });
+                        
+                        // Rozet kontrolü yap
+                        if (_userEmail.isNotEmpty) {
+                          await BadgeService.checkAndAwardBadges(_userEmail);
+                        }
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Notunuz başarıyla gönderildi!')),
@@ -635,6 +652,78 @@ class _DersNotlari1State extends State<DersNotlari1> {
     );
   }
 
+  void _showUserBadges() async {
+    if (_userEmail.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kullanıcı bilgisi bulunamadı')),
+      );
+      return;
+    }
+
+    final userBadges = await BadgeService.getUserBadges(_userEmail);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Rozetlerim'),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 300,
+          child: userBadges.isEmpty
+              ? const Center(child: Text('Henüz rozet kazanmadınız'))
+              : GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1,
+                  ),
+                  itemCount: userBadges.length,
+                  itemBuilder: (context, index) {
+                    final userBadge = userBadges[index];
+                    final badge = BadgeService.getBadgeById(userBadge.badgeId);
+                    if (badge == null) return const SizedBox();
+                    
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              badge.icon,
+                              size: 40,
+                              color: badge.color,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              badge.name,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                            Text(
+                              badge.description,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Kapat'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildNoteCard(DocumentSnapshot doc) {
     var data = doc.data() as Map<String, dynamic>;
     final isFavorite = userFavorites.contains(doc.id);
@@ -658,13 +747,46 @@ class _DersNotlari1State extends State<DersNotlari1> {
             if (data['paylasan_kullanici_adi'] != null && data['paylasan_kullanici_soyadi'] != null)
               Container(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  'Paylaşan: ${data['paylasan_kullanici_adi']} ${data['paylasan_kullanici_soyadi']}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: primaryColor,
-                  ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Paylaşan: ${data['paylasan_kullanici_adi']} ${data['paylasan_kullanici_soyadi']}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ),
+                    if (data['paylasan_kullanici_email'] != null)
+                      FutureBuilder<List<UserBadge>>(
+                        future: BadgeService.getUserBadges(data['paylasan_kullanici_email']),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return const SizedBox();
+                          }
+                          
+                          final badges = snapshot.data!.take(3).toList();
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: badges.map((userBadge) {
+                              final badge = BadgeService.getBadgeById(userBadge.badgeId);
+                              if (badge == null) return const SizedBox();
+                              
+                              return Padding(
+                                padding: const EdgeInsets.only(left: 4),
+                                child: Icon(
+                                  badge.icon,
+                                  size: 16,
+                                  color: badge.color,
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                  ],
                 ),
               ),
 
@@ -816,6 +938,11 @@ class _DersNotlari1State extends State<DersNotlari1> {
         backgroundColor: primaryColor,
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.emoji_events, color: Colors.white),
+            onPressed: _showUserBadges,
+            tooltip: 'Rozetlerim',
+          ),
           IconButton(
             icon: const Icon(Icons.add, color: Colors.white),
             onPressed: () => _showNotPaylasDialog(context),

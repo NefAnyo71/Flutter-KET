@@ -28,7 +28,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     with TickerProviderStateMixin {
   TabController? _tabController;
   late AnimationController _controller;
-  late Animation<Color?> _iconGlow;
+
   List<dynamic> cryptoData = [];
   List<dynamic> stockData = [];
   bool isLoading = true;
@@ -36,7 +36,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
   final Map<String, bool> _expandedCards = {};
   final Map<String, bool> _favorites = {};
   String _searchQuery = '';
-  List<Map<String, dynamic>> _comparisonList = [];
+
 
   // Yeni: Seçilen öğeleri tutmak için Set kullanılıyor
   final Set<String> _selectedItems = {};
@@ -95,10 +95,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
 
-    _iconGlow = ColorTween(
-      begin: Colors.white,
-      end: _accentColor,
-    ).animate(_controller);
+
 
     fetchMarketData();
   }
@@ -227,11 +224,7 @@ class _LiveMarketPageState extends State<LiveMarketPage>
     }
   }
 
-  void _toggleExpand(String id) {
-    setState(() {
-      _expandedCards[id] = !(_expandedCards[id] ?? false);
-    });
-  }
+
 
   void _toggleFavorite(String id) {
     setState(() {
@@ -934,7 +927,6 @@ class _ComparePageState extends State<ComparePage> {
 
   final Color _positiveColor = const Color(0xFF00E676);
   final Color _negativeColor = const Color(0xFFFF5252);
-  final Color _accentColor = const Color(0xFF03DAC6);
 
   @override
   void initState() {

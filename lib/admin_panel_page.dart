@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ket/BasvuruSorgulama.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'admin_logging_service.dart';
+import 'BasvuruSorgulama.dart';
 import 'Topluluk_Haberleri_Yönetici.dart';
 import 'cleaner_admin_page.dart';
 import 'oylama.dart';
@@ -11,275 +13,281 @@ import 'DersNotlariAdmin1.dart';
 import 'admin_yaklasan_etkinlikler.dart';
 import 'admin_survey_page.dart';
 import 'uye_kayit_bilgileri.dart';
+import 'admin_logs_viewer_page.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Admin Paneli',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: TextTheme(
-          bodyMedium: TextStyle(color: Colors.black), // Varsayılan metin rengi
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white.withOpacity(0.8),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.blue, width: 2),
-          ),
-          labelStyle: TextStyle(color: Colors.black), // Input label rengi
-        ),
-      ),
-      home: const AdminPanelPage(),
-    );
-  }
-}
-
-class AdminPanelPage extends StatelessWidget {
+class AdminPanelPage extends StatefulWidget {
   const AdminPanelPage({Key? key}) : super(key: key);
 
-  void _showLoginDialog(BuildContext context, Widget destinationPage) {
-    final _formKey = GlobalKey<FormState>();
-    final _usernameController = TextEditingController();
-    final _passwordController = TextEditingController();
-    final String _correctUsername = 'kkuekonomi71';
-    final String _correctPassword = 'kkuekonomi71';
-    bool _obscurePassword = true;
+  @override
+  _AdminPanelPageState createState() => _AdminPanelPageState();
+}
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: const Text(
-            'Yönetici Girişi',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black, // Başlık rengi siyah
-            ),
-          ),
-          content: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                TextFormField(
-                  controller: _usernameController,
-                  style: TextStyle(color: Colors.black), // Input metin rengi
-                  decoration: const InputDecoration(
-                    labelText: 'Kullanıcı Adı',
-                    prefixIcon: Icon(Icons.person, color: Colors.black),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Lütfen kullanıcı adınızı girin';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 15),
-                TextFormField(
-                  controller: _passwordController,
-                  style: TextStyle(color: Colors.black), // Input metin rengi
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Şifre',
-                    prefixIcon: const Icon(Icons.lock, color: Colors.black),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: Colors.black, // Göz ikonu rengi
-                      ),
-                      onPressed: () {
-                        _obscurePassword = !_obscurePassword;
-                        (context as Element).markNeedsBuild();
-                      },
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Lütfen şifrenizi girin';
-                    }
-                    if (value.length < 6) {
-                      return 'Şifre en az 6 karakter olmalıdır';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
-                if (_usernameController.text.isNotEmpty &&
-                    _passwordController.text.isNotEmpty &&
-                    (_usernameController.text != _correctUsername ||
-                        _passwordController.text != _correctPassword))
-                  const Text(
-                    'Kullanıcı adı veya şifre hatalı',
-                    style: TextStyle(color: Colors.red),
-                  ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'VAZGEÇ',
-                style: TextStyle(color: Colors.black), // Buton metin rengi
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  if (_usernameController.text == _correctUsername &&
-                      _passwordController.text == _correctPassword) {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => destinationPage),
-                    );
-                  } else {
-                    (context as Element).markNeedsBuild();
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-              child: const Text(
-                'GİRİŞ YAP',
-                style: TextStyle(
-                    color: Colors.white), // Bu butonun metni beyaz kalsın
-              ),
-            ),
-          ],
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-        );
-      },
-    );
+class _AdminPanelPageState extends State<AdminPanelPage> {
+  bool _isAuthenticated = false;
+  String? _authenticatedAdminUsername;
+
+  void _onLoginSuccess(String username) {
+    setState(() {
+      _isAuthenticated = true;
+      _authenticatedAdminUsername = username;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Admin Paneli',
-          style: TextStyle(color: Colors.white), // AppBar başlık rengi
+        title: Text(
+          _isAuthenticated ? 'Admin Paneli' : 'Yönetici Girişi',
+          style: const TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.deepPurple.shade700,
         centerTitle: true,
         elevation: 4,
-        iconTheme: IconThemeData(color: Colors.white), // AppBar ikon rengi
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF4A90E2),
-              Color(0xFFFFA500),
-              Color(0xFFFFD700),
-              Color(0xFFFF0000),
-            ],
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (child, animation) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        child: _isAuthenticated
+            ? _AdminDashboard(
+                key: const ValueKey('AdminDashboard'),
+                adminUsername: _authenticatedAdminUsername!,
+              )
+            : _AdminLoginScreen(
+                key: const ValueKey('AdminLoginScreen'),
+                onLoginSuccess: _onLoginSuccess,
+              ),
+      ),
+    );
+  }
+}
+
+class _AdminLoginScreen extends StatefulWidget {
+  final Function(String) onLoginSuccess;
+
+  const _AdminLoginScreen({Key? key, required this.onLoginSuccess})
+      : super(key: key);
+
+  @override
+  __AdminLoginScreenState createState() => __AdminLoginScreenState();
+}
+
+class __AdminLoginScreenState extends State<_AdminLoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+  bool _isLoading = false;
+  String _errorMessage = '';
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _attemptLogin() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text;
+
+    try {
+      final isValid = await _validateCredentials(username, password);
+
+      // Giriş denemesini logla
+      await AdminLoggingService.logLoginAttempt(
+        adminUsername: username,
+        isSuccessful: isValid,
+      );
+
+      if (mounted) {
+        if (isValid) {
+          widget.onLoginSuccess(username);
+        } else {
+          setState(() {
+            _errorMessage = 'Kullanıcı adı veya şifre hatalı.';
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Giriş sırasında bir hata oluştu.';
+          _isLoading = false;
+        });
+      }
+      print("Giriş hatası: $e");
+    }
+  }
+
+  Future<bool> _validateCredentials(String username, String password) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('adminpanelcollection')
+          .where('kullanici_adi', isEqualTo: username)
+          .where('sifre', isEqualTo: password)
+          .limit(1)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print('Firebase doğrulama hatası: $e');
+      return false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.deepPurple.shade300, Colors.cyan.shade200],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(32.0),
+          child: Card(
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      Icons.admin_panel_settings_rounded,
+                      size: 60,
+                      color: Colors.deepPurple,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Yönetici Girişi',
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                    ),
+                    const SizedBox(height: 24),
+                    TextFormField(
+                      controller: _usernameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Kullanıcı Adı',
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Lütfen kullanıcı adınızı girin';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        labelText: 'Şifre',
+                        prefixIcon: const Icon(Icons.lock),
+                        border: const OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Lütfen şifrenizi girin';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    if (_isLoading)
+                      const CircularProgressIndicator()
+                    else
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.login),
+                          onPressed: _attemptLogin,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepPurple,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          label: const Text('GİRİŞ YAP'),
+                        ),
+                      ),
+                    if (_errorMessage.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                          _errorMessage,
+                          style:
+                              const TextStyle(color: Colors.red, fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
-        child: ListView(
-          padding: const EdgeInsets.all(20),
-          children: <Widget>[
-            _buildAdminButton(
-              context,
-              'Yaklaşan Etkinlikler',
-              Icons.calendar_month_outlined,
-              EtkinlikJson5(),
-            ),
-            _buildAdminButton(
-              context,
-              'Etkinlik Takvimi',
-              Icons.calendar_month_outlined,
-              CleanderAdminPage(),
-            ),
-            _buildAdminButton(
-              context,
-              'Topluluk Haberleri',
-              Icons.newspaper_outlined,
-              ToplulukHaberleriSayfasi(),
-            ),
-            _buildAdminButton(
-              context,
-              'Oylama Ekranı',
-              Icons.how_to_vote_outlined,
-              VotingScreen(),
-            ),
-            _buildAdminButton(
-              context,
-              'İnternet Sitesi Başvuruları',
-              Icons.web_outlined,
-              WebsiteApplicationsPage(),
-            ),
-            _buildAdminButton(
-              context,
-              'Öğrenci Veri Tabanı',
-              Icons.web_outlined,
-              BasvuruSorgulama(),
-            ),
-            _buildAdminButton(
-              context,
-              'Karaliste',
-              Icons.web_outlined,
-              KaraListe(),
-            ),
-            _buildAdminButton(
-              context,
-              'Yapay Zeka Öğrenci\nAlgoritma Puanlama Sistemi', 
-              Icons.web_outlined,
-              PuanlamaSayfasi(),
-            ),
-            _buildAdminButton(
-              context,
-              'İnternet Sitesi Çerezleri',
-              Icons.web_outlined,
-              SiteSessionsWidget(),
-            ),
-            _buildAdminButton(
-              context,
-              'Ders Notu Paylaşım Sistemi',
-              Icons.web_outlined,
-              DersNotlariAdmin1(),
-            ),
-            _buildAdminButton(
-              context,
-              'Anketler ve Geri Bildirimler',
-              Icons.web_outlined,
-              SurveyPage1(),
-            ),
-            _buildAdminButton(
-              context,
-              'Üye Kayıt Bilgileri',
-              Icons.people_outline,
-              UyeKayitBilgileri(),
-            ),
-          ],
-        ),
       ),
+    );
+  }
+}
+
+class _AdminDashboard extends StatelessWidget {
+  final String adminUsername;
+
+  const _AdminDashboard({Key? key, required this.adminUsername})
+      : super(key: key);
+
+  void _handleNavigation(
+      BuildContext context, String label, Widget destinationPage) {
+    // Yönlendirme aksiyonunu logla
+    AdminLoggingService.logNavigation(
+      adminUsername: adminUsername,
+      buttonLabel: label,
+    );
+    // Sayfaya yönlendir
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => destinationPage),
     );
   }
 
@@ -297,7 +305,7 @@ class AdminPanelPage extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => _showLoginDialog(context, destinationPage),
+        onTap: () => _handleNavigation(context, label, destinationPage),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -321,4 +329,104 @@ class AdminPanelPage extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.deepPurple.shade50,
+            Colors.blue.shade50,
+          ],
+        ),
+      ),
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: <Widget>[
+          _buildAdminButton(
+            context,
+            'Yaklaşan Etkinlikler',
+            Icons.event_available,
+            EtkinlikJson5(),
+          ),
+          _buildAdminButton(
+            context,
+            'Etkinlik Takvimi',
+            Icons.calendar_today,
+            CleanderAdminPage(),
+          ),
+          _buildAdminButton(
+            context,
+            'Topluluk Haberleri',
+            Icons.newspaper,
+            ToplulukHaberleriSayfasi(),
+          ),
+          _buildAdminButton(
+            context,
+            'Oylama Ekranı',
+            Icons.how_to_vote,
+            VotingScreen(),
+          ),
+          _buildAdminButton(
+            context,
+            'İnternet Sitesi Başvuruları',
+            Icons.web,
+            WebsiteApplicationsPage(),
+          ),
+          _buildAdminButton(
+            context,
+            'Öğrenci Veri Tabanı',
+            Icons.storage,
+            BasvuruSorgulama(),
+          ),
+          _buildAdminButton(
+            context,
+            'Karaliste',
+            Icons.block,
+            KaraListe(),
+          ),
+          _buildAdminButton(
+            context,
+            'Yapay Zeka Puanlama Sistemi',
+            Icons.auto_awesome,
+            PuanlamaSayfasi(),
+          ),
+          _buildAdminButton(
+            context,
+            'İnternet Sitesi Çerezleri',
+            Icons.cookie,
+            SiteSessionsWidget(),
+          ),
+          _buildAdminButton(
+            context,
+            'Ders Notu Paylaşım Sistemi',
+            Icons.menu_book,
+            DersNotlariAdmin1(),
+          ),
+          _buildAdminButton(
+            context,
+            'Anketler ve Geri Bildirimler',
+            Icons.poll,
+            SurveyPage1(),
+          ),
+          _buildAdminButton(
+            context,
+            'Üye Kayıt Bilgileri',
+            Icons.people,
+            UyeKayitBilgileri(),
+          ),
+          _buildAdminButton(
+            context,
+            'Yönetici Aktivite Logları',
+            Icons.history,
+            const AdminLogsViewerPage(),
+          ),
+        ],
+      ),
+    );
+  }
 }
+// admin_logging_service.dart

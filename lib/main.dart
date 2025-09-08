@@ -24,6 +24,8 @@ import 'notification_service.dart';
 import 'account_settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:in_app_update/in_app_update.dart';
+import 'gemini_chat_page.dart';
+
 
 // Bildirimler için bir instance oluşturun
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -33,6 +35,7 @@ FlutterLocalNotificationsPlugin();
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 // Arka plan görevi için top-level fonksiyon
+@pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) {
     if (taskName == "eventNotificationTask") {
@@ -164,43 +167,7 @@ Future<Map<String, dynamic>> _validateUserFromFirestore(
   }
 }
 
-// Kullanıcı şifresini güncelleme
-Future<void> _updateUserPassword(String email, String newPassword) async {
-  try {
-    await _firestore.collection('üyelercollection').doc(email).update({
-      'password': newPassword,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
-    print('Şifre güncellendi: $email');
-  } catch (e) {
-    print('Şifre güncelleme hatası: $e');
-  }
-}
 
-// Hesap silme fonksiyonu
-Future<void> _deleteAccount(String email) async {
-  try {
-    // Firestore'dan kullanıcıyı sil
-    await _firestore.collection('üyelercollection').doc(email).delete();
-    print('Hesap silindi: $email');
-  } catch (e) {
-    print('Hesap silme hatası: $e');
-  }
-}
-
-// Hesap devre dışı bırakma fonksiyonu
-Future<void> _deactivateAccount(String email) async {
-  try {
-    // Hesabı devre dışı bırak (hesapEngellendi = 1 yaparak)
-    await _firestore.collection('üyelercollection').doc(email).update({
-      'hesapEngellendi': 1,
-      'deactivatedAt': FieldValue.serverTimestamp(),
-    });
-    print('Hesap devre dışı bırakıldı: $email');
-  } catch (e) {
-    print('Hesap devre dışı bırakma hatası: $e');
-  }
-}
 
 // Splash Screen Widget
 class SplashScreenApp extends StatelessWidget {
@@ -593,22 +560,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _isLoggedIn = false;
-  String _userName = '';
-  String _userSurname = '';
   bool _hasSeenUyeKayit = false;
 
   // Giriş durumunu kontrol et
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('email');
-    final name = prefs.getString('name') ?? '';
-    final surname = prefs.getString('surname') ?? '';
     final hasSeenUyeKayit = prefs.getBool('hasSeenUyeKayit') ?? false;
 
     setState(() {
       _isLoggedIn = email != null;
-      _userName = name;
-      _userSurname = surname;
       _hasSeenUyeKayit = hasSeenUyeKayit;
     });
 
@@ -704,6 +665,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String _userName = '';
   String _userSurname = '';
   String _userEmail = '';
+  int _eventNotificationCount = 0;
+  bool _showKetMessage = false;
 
   @override
   void initState() {
@@ -718,6 +681,9 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     });
+    _loadNotificationCount();
+    _listenToNotifications();
+    
   }
 
   Future<void> _loadUserData() async {
@@ -731,18 +697,82 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _loadNotificationCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _eventNotificationCount = prefs.getInt('event_notification_count') ?? 0;
+      });
+    }
+  }
+
+  void _listenToNotifications() {
+    // Foreground mesajları dinle
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('📱 Bildirim geldi: ${message.notification?.title}');
+      print('📱 Data: ${message.data}');
+      
+      if (message.data['type'] == 'event' || 
+          message.notification?.title?.contains('Etkinlik') == true ||
+          message.notification?.title?.contains('etkinlik') == true) {
+        print('🔔 Etkinlik bildirimi tespit edildi, sayaç artırılıyor');
+        _incrementNotificationCount();
+      }
+    });
+    
+    // Background/terminated durumdan gelen mesajları dinle
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('📱 Arka plan bildirim açıldı: ${message.notification?.title}');
+      if (message.data['type'] == 'event' || 
+          message.notification?.title?.contains('Etkinlik') == true ||
+          message.notification?.title?.contains('etkinlik') == true) {
+        _incrementNotificationCount();
+      }
+    });
+    
+    // Uygulama kapalıyken gelen mesajları kontrol et
+    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        print('📱 Uygulama kapalıyken gelen mesaj: ${message.notification?.title}');
+        if (message.data['type'] == 'event' || 
+            message.notification?.title?.contains('Etkinlik') == true ||
+            message.notification?.title?.contains('etkinlik') == true) {
+          _incrementNotificationCount();
+        }
+      }
+    });
+  }
+
+  Future<void> _incrementNotificationCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _eventNotificationCount++;
+      });
+      await prefs.setInt('event_notification_count', _eventNotificationCount);
+      print('✅ Bildirim sayaç artırıldı: $_eventNotificationCount');
+    }
+  }
+
+  Future<void> _clearNotificationCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('event_notification_count', 0);
+    if (mounted) {
+      setState(() {
+        _eventNotificationCount = 0;
+      });
+    }
+  }
+
   void _showWelcomeDialog(BuildContext context) {
-    // Daha akıcı bir animasyon için showGeneralDialog kullanıyoruz.
     showGeneralDialog(
       context: context,
-      barrierDismissible: false, // Kullanıcı dışarı tıklayarak kapatamaz
-      // Erişilebilirlik etiketi. Flutter'ın eski sürümleriyle uyumluluk için
-      // sabit bir dize kullanmak daha güvenlidir.
+      barrierDismissible: false, 
       barrierLabel: 'Arka Plan',
       barrierColor: Colors.black.withOpacity(0.5),
-      transitionDuration: const Duration(milliseconds: 500), // Animasyon süresi
+      transitionDuration: const Duration(milliseconds: 500), 
       pageBuilder: (context, animation, secondaryAnimation) {
-        // Bu kısım dialog'un içeriğini oluşturur.
+
         return Center(
           child: Dialog(
             shape: RoundedRectangleBorder(
@@ -769,7 +799,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return ScaleTransition(
           scale: CurvedAnimation(
             parent: animation,
-            curve: Curves.easeOutBack, // "Fırlama" efekti için güzel bir curve
+            curve: Curves.easeOutBack, 
           ),
           child: FadeTransition(
             opacity: animation,
@@ -784,6 +814,24 @@ class _MyHomePageState extends State<MyHomePage> {
       // Dialog'u kapatmadan önce hala ekranda olup olmadığını kontrol et
       if (mounted && Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
+        // Selamlama bittikten sonra KET mesajını göster
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          if (mounted) {
+            setState(() {
+              _showKetMessage = true;
+            });
+            print('KET mesajı gösterildi: $_showKetMessage');
+            // 4 saniye sonra mesajı gizle
+            Future.delayed(const Duration(seconds: 4), () {
+              if (mounted) {
+                setState(() {
+                  _showKetMessage = false;
+                });
+                print('KET mesajı gizlendi');
+              }
+            });
+          }
+        });
       }
     });
   }
@@ -879,11 +927,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     Icons.calendar_today,
                     EtkinlikJson(),
                   ),
-                  _buildGridButton(
+                  _buildGridButtonWithBadge(
                     context,
                     'Yaklaşan Etkinlikler',
                     Icons.calendar_today,
                     EtkinlikJson2(),
+                    _eventNotificationCount,
+                    _clearNotificationCount, 
                   ),
                   _buildGridButton(
                     context,
@@ -939,6 +989,91 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+      floatingActionButton: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          SizedBox(
+            width: 80,
+            height: 80,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GeminiChatPage(
+                    userName: _userName,
+                    userSurname: _userSurname,
+                    userEmail: _userEmail,
+                  )),
+                );
+              },
+              backgroundColor: Colors.deepPurple.shade700,
+              child: Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/ketyapayzeka.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (_showKetMessage)
+            Positioned(
+              right: 90,
+              bottom: 20,
+              child: Container(
+                width: 200,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.deepPurple.shade300, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Hoş geldin $_userName!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple.shade700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Sana nasıl yardımcı olabilirim?',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Üstüme tıkla!',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
   Widget _buildGridButton(
@@ -984,6 +1119,85 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildGridButtonWithBadge(
+      BuildContext context, String title, IconData icon, Widget page, int badgeCount, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: () {
+        onTap();
+        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+      },
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.white, Colors.grey.shade100],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.deepPurple.withOpacity(0.1),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+              border: Border.all(color: Colors.deepPurple.shade100, width: 1.0),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 45.0, color: Colors.deepPurple.shade600),
+                const SizedBox(height: 8.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple.shade900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (badgeCount > 0)
+            Positioned(
+              right: 8,
+              top: 8,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+                child: Text(
+                  badgeCount > 99 ? '99+' : badgeCount.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

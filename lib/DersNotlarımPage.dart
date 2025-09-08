@@ -887,34 +887,12 @@ class _DersNotlarimState extends State<DersNotlarim> {
           rethrow;
         }
       } else if (fromPdf) {
-        // PDF'ten fotoğraf ekleme işlevi burada yer alacak
-        // Bu işlev için 'file_picker' ve 'pdfx' gibi paketlere ihtiyacınız olacaktır.
-        // pubspec.yaml dosyanıza bu paketleri eklemelisiniz:
-        // dependencies:
-        //   file_picker: ^6.1.1
-        //   pdfx: ^2.5.0
-
-        // final result = await FilePicker.platform.pickFiles(
-        //   type: FileType.custom,
-        //   allowedExtensions: ['pdf'],
-        // );
-
-        // if (result != null) {
-        //   final file = File(result.files.single.path!);
-        //   // PDF'teki tüm sayfaları okuyun ve görsellerini çıkarın.
-        //   final pdf = await PdfDocument.openFile(file.path);
-        //   for (var i = 1; i <= pdf.pagesCount; i++) {
-        //     final page = await pdf.getPage(i);
-        //     final pageImage = await page.render(); // Bu satır pdfx kütüphanesine göre değişebilir
-        //     // pageImage'ı bir File olarak kaydedin ve Ders objesine ekleyin
-        //     // ...
-        //   }
-        // }
-
+        // pdf ekleme kısmını buraya unutmazsam ekleyeceğim ------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // pdf ekleme kısmını buraya unutmazsam ekleyeceğim ------------------------------------------------------------------------------------------------------------------------------------------------------------
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Bu özellik henüz tam olarak uygulanmadı. Lütfen "pdfx" gibi bir paket ekleyin ve kodunuzu tamamlayın.'),
+              content: Text('Bu özellik yakında gelecek.'),
               backgroundColor: AppColors.warning,
             ),
           );
