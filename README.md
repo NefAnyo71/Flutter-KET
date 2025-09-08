@@ -1,4 +1,4 @@
-# 🎓 EKOS - Kırıkkale Üniversitesi Ekonomi Topluluğu Mobil Uygulaması
+# 🎓 KET - Kırıkkale Üniversitesi Ekonomi Topluluğu Mobil Uygulaması
 
 <div align="center">
   <img src="assets/images/ekoslogo.png" alt="EKOS Logo" width="200"/>
@@ -438,7 +438,6 @@ lib/
 │   └── notification_service.dart
 ├── admin/             # Yönetici paneli
 ├── pages/             # Ana sayfalar
-├── widgets/           # Yeniden kullanılabilir bileşenler
 └── main.dart          # Uygulama giriş noktası
 ```
 
@@ -452,7 +451,6 @@ lib/
 
 ### Kullanıcı Kimlik Doğrulama
 - Firebase Authentication entegrasyonu
-- Anonim giriş desteği
 - Hesap engelleme sistemi
 - Güvenli şifre yönetimi
 
