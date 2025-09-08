@@ -1,4 +1,4 @@
-# 🎓 KET - Kırıkkale Üniversitesi Ekonomi Topluluğu Mobil Uygulaması
+# 🎓 EKOS - Kırıkkale Üniversitesi Ekonomi Topluluğu Mobil Uygulaması
 
 <div align="center">
   <img src="assets/images/ekoslogo.png" alt="EKOS Logo" width="200"/>
@@ -11,7 +11,7 @@
 KET(kku ekonomi toplululuğu), Kırıkkale Üniversitesi Ekonomi Topluluğu için Flutter ile geliştirilmiş modern bir mobil uygulamadır. Uygulama, topluluk etkinlikleri, güncel ekonomi haberleri, ders notları paylaşımı ve sosyal medya entegrasyonu gibi kapsamlı özellikler sunar.
 
 **Sürüm**: 6.6.6
-**Geliştirici**: Arif   
+**Geliştirici**: Arif Kerem  
 **Platform**: Android (iOS desteği mevcut)  
 **Dil**: Dart/Flutter  
 **Veritabanı**: Firebase Firestore  
@@ -105,7 +105,7 @@ KET(kku ekonomi toplululuğu), Kırıkkale Üniversitesi Ekonomi Topluluğu içi
 #### `admin_panel_page.dart` - Yönetici Paneli
 - **İşlev**: Yönetici girişi ve yönetim araçları
 - **Özellikler**:
-  - Güvenli yönetici girişi 
+  - Güvenli yönetici girişi (kullanıcı adı: kkuekonomi71)
   - Etkinlik yönetimi
   - Topluluk haberleri yönetimi
   - Oylama sistemi yönetimi
@@ -531,8 +531,7 @@ flutter drive --target=test_driver/app.dart
 ## 📞 Destek ve İletişim
 
 ### Geliştirici İletişim
-- **E-posta**: [geliştirici e-postası]
-- **GitHub**: [repository linki]
+- **E-posta**: arifkerem71@gmail.com
 - **Topluluk**: Kırıkkale Üniversitesi Ekonomi Topluluğu
 
 ### Hata Bildirimi
@@ -547,16 +546,17 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 
 ## 🙏 Katkıda Bulunanlar
 
-- **Arif** - Ana Geliştirici
+- **Arif Özdemir** - Ana Geliştirici
 - **Kırıkkale Üniversitesi Ekonomi Topluluğu** - Proje Sponsoru
 
 ## 📝 Sürüm Geçmişi
 
-### v6.0.0 (Güncel)
+### v6.8.8 (Güncel)
 - Gelişmiş ders notu paylaşım sistemi
 - Yönetici paneli iyileştirmeleri
 - Bildirim sistemi güncellemeleri
 - Performans optimizasyonları
+- Yapayzeka Ket eklendi
 
 ### v5.x.x
 - Temel özellikler
@@ -572,8 +572,8 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 - Gelişmiş analitik
 
 ### Uzun Dönem
-- Web uygulaması geliştirme
-- Yapay zeka entegrasyonu
+- Web uygulaması geliştirme(Web sitesi muhtemelen aynı kalıcak bir süre daha)
+- Yapay zeka entegrasyonu(Eklendi)
 - Sosyal özellikler genişletme
 - Mikroservis mimarisi
 
@@ -587,5 +587,5 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
   <img src="https://img.shields.io/badge/Flutter-3.6.1+-blue?logo=flutter" alt="Flutter">
   <img src="https://img.shields.io/badge/Dart-3.6.1+-blue?logo=dart" alt="Dart">
   <img src="https://img.shields.io/badge/Firebase-Latest-orange?logo=firebase" alt="Firebase">
-  <img src="https://img.shields.io/badge/Version-6.6.6-green" alt="Version">
+  <img src="https://img.shields.io/badge/Version-6.0.0-green" alt="Version">
 </div>
