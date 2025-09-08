@@ -558,10 +558,90 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 - Performans optimizasyonları
 - Yapayzeka Ket eklendi
 
-### v1.x.x
+### v5.x.x
 - Temel özellikler
 - Firebase entegrasyonu
 - Kullanıcı arayüzü geliştirmeleri
+
+## 🤖 KET Yapay Zeka Asistanı
+
+<div align="center">
+  <img src="assets/images/ketyapayzeka.png" alt="KET AI Asistan" width="120"/>
+  <br>
+  <strong>Google Gemini AI ile güçlendirilmiş akıllı topluluk asistanı</strong>
+</div>
+
+### 🧠 Yapay Zeka Özellikleri
+
+#### **💬 Akıllı Sohbet Sistemi**
+- **Google Gemini 1.5 Flash** modeli entegrasyonu
+- **Türkçe dil desteği** ile doğal konuşma
+- **KET bilgi bankası** ile özelleştirilmiş yanıtlar
+- **Bağlamsal anlama** ve akıllı cevap üretme
+
+#### **🎤 Çoklu İletişim Kanalları**
+- **Sesli mesaj gönderme** ve kaydetme
+- **Speech-to-Text** ile sesle soru sorma
+- **Text-to-Speech** ile yanıtları sesli okuma
+- **Görsel analizi** ile fotoğraf gönderme ve açıklama
+
+#### **📚 Kapsamlı Bilgi Bankası**
+- **500+ topluluk bilgisi** detaylı açıklamalarla
+- **Etkinlik ve organizasyon** bilgileri
+- **Ders notları sistemi** rehberliği
+- **Üyelik ve hesap yönetimi** desteği
+- **Sorun giderme** ve teknik destek
+
+#### **🎨 Modern Kullanıcı Arayüzü**
+- **Karanlık/Aydınlık mod** desteği
+- **Mesaj kopyalama** ve silme özellikleri
+- **Zaman damgası** ile mesaj geçmişi
+- **Sık sorulan sorular** hızlı erişim
+- **Kullanım sınırları** ile adil kaynak yönetimi
+
+#### **⚡ Performans ve Güvenlik**
+- **Günlük 10 mesaj** sınırı ile kaynak optimizasyonu
+- **5 dakikada 10 mesaj** spam koruması
+- **Chat geçmişi** yerel depolama
+- **API güvenliği** ve hata yönetimi
+
+### 🚀 KET AI Kullanım Senaryoları
+
+#### **📋 Topluluk Bilgileri**
+```
+"KET nedir?"
+"Nasıl üye olabilirim?"
+"Etkinlikler ücretsiz mi?"
+"İletişim bilgileri neler?"
+```
+
+#### **📖 Akademik Destek**
+```
+"Ders notları nasıl paylaşılır?"
+"Sertifika nasıl alınır?"
+"Staj imkanları var mı?"
+```
+
+#### **🔧 Teknik Destek**
+```
+"Uygulama çalışmıyor"
+"Bildirim alamıyorum"
+"Şifremi unuttum"
+```
+
+#### **📊 Görsel Analiz**
+- Ekonomi grafikleri açıklama
+- Ders notu içeriği analizi
+- Etkinlik posterlerini değerlendirme
+- Finansal tabloları yorumlama
+
+### 🎯 AI Asistan Avantajları
+
+- **7/24 Erişilebilirlik**: Her zaman aktif destek
+- **Anında Yanıt**: Hızlı ve doğru bilgi
+- **Kişiselleştirilmiş**: Kullanıcı adıyla özel karşılama
+- **Çok Dilli**: Türkçe odaklı doğal dil işleme
+- **Öğrenebilir**: Sürekli gelişen bilgi bankası
 
 ## 🔮 Gelecek Planları
 
@@ -573,7 +653,7 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 
 ### Uzun Dönem
 - Web uygulaması geliştirme(Web sitesi muhtemelen aynı kalıcak bir süre daha)
-- Yapay zeka entegrasyonu(Eklendi)
+- **Yapay zeka entegrasyonu** ✅ **TAMAMLANDI**
 - Sosyal özellikler genişletme
 - Mikroservis mimarisi
 
