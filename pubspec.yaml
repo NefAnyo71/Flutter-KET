@@ -41,6 +41,12 @@ dependencies:
   syncfusion_flutter_charts: ^26.1.35
   flutter_screenutil: ^5.9.3
   in_app_update: ^4.2.3
+  flutter_tts: ^4.0.2
+  speech_to_text: ^7.0.0
+  audio_waveforms: ^1.0.5
+  audioplayers: ^6.1.0
+  
+  
 
 
 dev_dependencies:
@@ -60,6 +66,7 @@ flutter:
     - assets/images/twitterlogo.png
     - assets/images/chatgpt.png
     - assets/images/google_logo.png
+    - assets/images/ketyapayzeka.png
 
 
 
