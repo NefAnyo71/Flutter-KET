@@ -1,4 +1,4 @@
-# 🎓 KET - Kırıkkale Üniversitesi Ekonomi Topluluğu Mobil Uygulaması
+# 🎓 EKOS - Kırıkkale Üniversitesi Ekonomi Topluluğu Mobil Uygulaması
 
 <div align="center">
   <img src="assets/images/ekoslogo.png" alt="EKOS Logo" width="200"/>
@@ -438,6 +438,7 @@ lib/
 │   └── notification_service.dart
 ├── admin/             # Yönetici paneli
 ├── pages/             # Ana sayfalar
+├── widgets/           # Yeniden kullanılabilir bileşenler
 └── main.dart          # Uygulama giriş noktası
 ```
 
@@ -451,6 +452,7 @@ lib/
 
 ### Kullanıcı Kimlik Doğrulama
 - Firebase Authentication entegrasyonu
+- Anonim giriş desteği
 - Hesap engelleme sistemi
 - Güvenli şifre yönetimi
 
@@ -576,6 +578,7 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 - **Türkçe dil desteği** ile doğal konuşma
 - **KET bilgi bankası** ile özelleştirilmiş yanıtlar
 - **Bağlamsal anlama** ve akıllı cevap üretme
+- **Firebase database entegrasyonu** collectiondaki verilere yapayzeka erişebiliyor 
 
 #### **🎤 Çoklu İletişim Kanalları**
 - **Sesli mesaj gönderme** ve kaydetme
@@ -655,6 +658,48 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 - Sosyal özellikler genişletme
 - Mikroservis mimarisi
 
+## 📱 Uygulama Ekran Görüntüleri
+
+<div align="center">
+  <h3>Ana Menü ve Navigasyon</h3>
+  <img src="https://r.resimlink.com/0BKyUzkbDhF.jpg" alt="Ana Menü" width="200"/>
+  <img src="https://r.resimlink.com/mdVa90Y5_kc.jpg" alt="Navigasyon" width="200"/>
+  <img src="https://r.resimlink.com/g0Dn6Hj7NR.jpg" alt="Menü Detay" width="200"/>
+  <img src="https://r.resimlink.com/rZ5HXtwTLyi.jpg" alt="Sidebar" width="200"/>
+</div>
+
+<div align="center">
+  <h3>Etkinlikler ve Takvim</h3>
+  <img src="https://r.resimlink.com/6lVfg.jpg" alt="Etkinlik Takvimi" width="200"/>
+  <img src="https://r.resimlink.com/O_Fg0hs1.jpg" alt="Yaklaşan Etkinlikler" width="200"/>
+  <img src="https://r.resimlink.com/tsz-JqXNA.jpg" alt="Etkinlik Detay" width="200"/>
+  <img src="https://r.resimlink.com/IFEgL.jpg" alt="Etkinlik Listesi" width="200"/>
+</div>
+
+<div align="center">
+  <h3>Ders Notları ve Eğitim</h3>
+  <img src="https://r.resimlink.com/JL7fY61ykD3.jpg" alt="Ders Notları" width="200"/>
+  <img src="https://r.resimlink.com/oxU_JkX7prD.jpg" alt="Not Paylaşım" width="200"/>
+  <img src="https://r.resimlink.com/_zPQaNC.jpg" alt="Ders Notlarım" width="200"/>
+  <img src="https://r.resimlink.com/E9PVRF.jpg" alt="Not Detay" width="200"/>
+</div>
+
+<div align="center">
+  <h3>Ekonomi ve Piyasa</h3>
+  <img src="https://r.resimlink.com/3md5lyQ6MFYL.jpg" alt="Canlı Piyasa" width="200"/>
+  <img src="https://r.resimlink.com/H72bxAdM.jpg" alt="Ekonomi Haberleri" width="200"/>
+  <img src="https://r.resimlink.com/_JiWaSqXU.jpg" alt="Piyasa Grafikleri" width="200"/>
+  <img src="https://r.resimlink.com/h7dALa4jn8mq.jpg" alt="Finansal Veriler" width="200"/>
+</div>
+
+<div align="center">
+  <h3>AI Asistan ve Diğer Özellikler</h3>
+  <img src="https://r.resimlink.com/rik1c3NL-O.jpg" alt="KET AI Asistan" width="200"/>
+  <img src="https://r.resimlink.com/EVcydXAKSlg.jpg" alt="Sosyal Medya" width="200"/>
+  <img src="https://r.resimlink.com/X4j8V03mwNR.jpg" alt="Hesap Ayarları" width="200"/>
+  <img src="https://r.resimlink.com/GOwZu.jpg" alt="Geri Bildirim" width="200"/>
+</div>
+
 ---
 
 **Not**: Bu README dosyası sürekli güncellenmektedir. En güncel bilgiler için repository'yi takip edin.
@@ -667,3 +712,5 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
   <img src="https://img.shields.io/badge/Firebase-Latest-orange?logo=firebase" alt="Firebase">
   <img src="https://img.shields.io/badge/Version-6.8.9-green" alt="Version">
 </div>
+
+
