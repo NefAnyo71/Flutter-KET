@@ -10,6 +10,20 @@
 
 KET(kku ekonomi toplululuğu), Kırıkkale Üniversitesi Ekonomi Topluluğu için Flutter ile geliştirilmiş modern bir mobil uygulamadır. Uygulama, topluluk etkinlikleri, güncel ekonomi haberleri, ders notları paylaşımı ve sosyal medya entegrasyonu gibi kapsamlı özellikler sunar.
 
+## 🎥 Proje Tanıtım Videosu
+
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=3jnqW75B0Bk" target="_blank">
+    <img src="https://img.youtube.com/vi/3jnqW75B0Bk/maxresdefault.jpg" alt="KET Proje Tanıtım Videosu" width="600"/>
+  </a>
+  <br>
+  <strong>📺 <a href="https://www.youtube.com/watch?v=3jnqW75B0Bk">KET Mobil Uygulaması ve Web Sitesi Tanıtım Videosu</a></strong>
+  <br>
+  <em>Projenin detaylı tanıtımı, özellikler ve kullanım rehberi</em>
+</div>
+
+---
+
 **Sürüm**: 6.8.9
 **Geliştirici**: Arif Kerem  
 **Platform**: Android (iOS desteği mevcut)  
@@ -695,6 +709,18 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
   <img src="https://r.resimlink.com/GOwZu.jpg" width="200"/>
 </div>
 
+## 🎬 Medya ve Kaynaklar
+
+### 📺 Video İçerikleri
+- **[Proje Tanıtım Videosu](https://www.youtube.com/watch?v=3jnqW75B0Bk)** - KET mobil uygulaması ve web sitesinin kapsamlı tanıtımı
+- **Özellik Demoları** - Uygulamanın temel özelliklerinin gösterimi
+- **Kurulum Rehberi** - Adım adım kurulum ve yapılandırma
+
+### 📚 Dokümantasyon
+- **API Dokümantasyonu** - Firebase ve harici API entegrasyonları
+- **Geliştirici Rehberi** - Kod yapısı ve geliştirme standartları
+- **Kullanıcı Kılavuzu** - Uygulama kullanım rehberi
+
 ---
 
 **Not**: Bu README dosyası sürekli güncellenmektedir. En güncel bilgiler için repository'yi takip edin.
@@ -706,6 +732,10 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
   <img src="https://img.shields.io/badge/Dart-3.6.1+-blue?logo=dart" alt="Dart">
   <img src="https://img.shields.io/badge/Firebase-Latest-orange?logo=firebase" alt="Firebase">
   <img src="https://img.shields.io/badge/Version-6.8.9-green" alt="Version">
+  <br>
+  <a href="https://www.youtube.com/watch?v=3jnqW75B0Bk">
+    <img src="https://img.shields.io/badge/YouTube-Tanıtım_Videosu-red?logo=youtube" alt="YouTube Video">
+  </a>
 </div>
 
 
